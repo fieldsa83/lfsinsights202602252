@@ -173,18 +173,26 @@ graph TD
     end
     
     StoreRaw --> FinalizeMicro[Combine All Raw Microdata]
-    CalcSumm --> PostProc
+    CalcSumm --> PostProcLoop
     
     subgraph Post-Processing & Finalization
-        PostProc[Combine Monthly Summaries] --> Complete[Complete Missing Combinations]
-        Complete --> MovingAvg[Calculate Moving Averages]
-        MovingAvg --> Ratios[Calculate Ratios & Period Changes]
-        Ratios --> Variance[Calculate Bootstrap Variance]
-        Variance --> Labels[Apply Human-Readable Labels]
+        PostProcLoop{FOR EACH DEFINED ESTIMATE:} --> Combine[Combine monthly summaries]
+        Combine --> Complete[Complete Data Combinations<br>fill missing rows]
+        Complete --> Marginals[Optional: Calculate Marginal Totals]
+        Marginals --> MovingAvg[Optional: Calculate Moving Average]
+        MovingAvg --> Suppression[Optional: Add Suppression Flags]
+        Suppression --> Rounding[Apply Rounding to Estimate Levels]
+        Rounding --> Ratios[IF Ratio/Distribution: Calculate Ratios]
+        Ratios --> Change[IF Change: Calculate Period Changes]
+        Change --> Differences[IF Difference: Calculate Category Differences]
+        Differences --> Variance[IF Bootstraps: Calculate Bootstrap Variance]
+        Variance --> CombineAll[Combine All Processed Estimates]
     end
     
+    CombineAll --> Labels
+    FinalizeMicro --> Labels[Optional: Apply Human-Readable Labels]
+    
     Labels --> CleanUp[Final Result Clean-up]
-    FinalizeMicro --> CleanUp
     CleanUp --> FinalOut([Final LFS Data Output])
 ```
 
