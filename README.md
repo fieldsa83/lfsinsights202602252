@@ -185,3 +185,32 @@ graph TD
     FinalizeMicro --> CleanUp
     CleanUp --> FinalOut([Final LFS Data Output])
 ```
+```markdown
+## Built-in Visualizations
+
+The package includes standardized plotting functions that use `plotly` to automatically handle formatting, source annotations, and responsive layouts.
+
+```r
+library(lfsinsights)
+
+# Generate a formatted line chart for the unemployment rate
+lfs_plotly_line(
+  data = df_result,
+  x = "DATE",
+  y = "Unemployment",
+  color = "GENDER",
+  title = "Unemployment Rate by Gender",
+  subtitle = "Monthly rates, seasonally adjusted",
+  y_title = "Percentage (%)"
+)
+
+# Generate a formatted bar chart
+lfs_plotly_bar(
+  data = df_result,
+  x = "DATE",
+  y = "Employment",
+  color = "PROV",
+  title = "Employment Levels by Province"
+)
+```
+```
