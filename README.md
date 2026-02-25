@@ -166,8 +166,8 @@ graph TD
     
     subgraph Iterative Monthly Processing
         Loop{For Each Required Month} --> LoadRaw[Load Raw Data]
-        LoadRaw --> |TABS, NORTH, SUPPLEMENT| ApplyFilter[Apply Global Filters & Custom DVs]
-        ApplyFilter --> ModeCheck{Microdata Only Mode?}
+        LoadRaw --> |TABS, NORTH, SUPPLEMENTS| ApplyFilter[Apply Global Filters & Custom DVs]
+        ApplyFilter --> |BOOTSTRAPS| ModeCheck{Microdata Only Mode?}
         ModeCheck -->|Yes| StoreRaw[Store Raw Microdata]
         ModeCheck -->|No| CalcSumm[Calculate Estimate Summaries]
     end
