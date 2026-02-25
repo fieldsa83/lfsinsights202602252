@@ -25,6 +25,47 @@ Click the link below to access and use the LFS Table Configurator:
 Or visit: https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/index.html
 
 
+## Package Workflow
+
+```mermaid
+graph TD
+    Start([LFS Insights Process Start<br>lfs_table / lfs_microdata]) --> Setup[Initialization & Setup]
+    Setup --> |Validate dates, determine months, load DVs| Loop
+    
+    subgraph Iterative Monthly Processing
+        Loop{For Each Required Month} --> LoadRaw[Load Raw TABS Data]
+        LoadRaw --> Supplements[Optional: load other data like NORTH, SUPPLEMENTS, etc]
+        Supplements --> DVs[Load derived variables]
+        DVs --> ApplyFilter[Apply global filter conditions]
+        ApplyFilter --> Boot[Optional: Load BOOTSTRAPS]
+        Boot --> ModeCheck{Microdata Only Mode?}
+        ModeCheck -->|Yes| StoreRaw[Store Raw Microdata]
+        ModeCheck -->|No| CalcSumm[Calculate Estimate Summaries]
+    end
+    
+    StoreRaw --> FinalizeMicro[Combine All Raw Microdata]
+    CalcSumm --> PostProcLoop
+    
+    subgraph Post-Processing & Finalization
+        PostProcLoop{FOR EACH DEFINED ESTIMATE:} --> Combine[Combine monthly summaries]
+        Combine --> Complete[Complete Data Combinations<br>fill missing rows]
+        Complete --> Marginals[Optional: Calculate Marginal Totals]
+        Marginals --> MovingAvg[Optional: Calculate Moving Average]
+        MovingAvg --> Suppression[Optional: Add Suppression Flags]
+        Suppression --> Rounding[Apply Rounding to Estimate Levels]
+        Rounding --> Ratios[IF Ratio/Distribution: Calculate Ratios]
+        Ratios --> Change[IF Change: Calculate Period Changes]
+        Change --> Differences[IF Difference: Calculate Category Differences]
+        Differences --> Variance[IF Bootstraps: Calculate Bootstrap Variance]
+        Variance --> CombineAll[Combine All Processed Estimates]
+    end
+    
+    CombineAll --> Labels
+    FinalizeMicro --> Labels[Optional: Apply Labels]
+    
+    Labels --> CleanUp[Final Result Clean-up]
+    CleanUp --> FinalOut([Final LFS Data Output])
+```
 ## Basic usage
 
 ```r
@@ -157,47 +198,6 @@ df_result <- lfs_table(
 )
 ```
 
-## Package Workflow
-
-```mermaid
-graph TD
-    Start([LFS Insights Process Start<br>lfs_table / lfs_microdata]) --> Setup[Initialization & Setup]
-    Setup --> |Validate dates, determine months, load DVs| Loop
-    
-    subgraph Iterative Monthly Processing
-        Loop{For Each Required Month} --> LoadRaw[Load Raw TABS Data]
-        LoadRaw --> Supplements[Optional: load other data like NORTH, SUPPLEMENTS, etc]
-        Supplements --> DVs[Load derived variables]
-        DVs --> ApplyFilter[Apply global filter conditions]
-        ApplyFilter --> Boot[Optional: Load BOOTSTRAPS]
-        Boot --> ModeCheck{Microdata Only Mode?}
-        ModeCheck -->|Yes| StoreRaw[Store Raw Microdata]
-        ModeCheck -->|No| CalcSumm[Calculate Estimate Summaries]
-    end
-    
-    StoreRaw --> FinalizeMicro[Combine All Raw Microdata]
-    CalcSumm --> PostProcLoop
-    
-    subgraph Post-Processing & Finalization
-        PostProcLoop{FOR EACH DEFINED ESTIMATE:} --> Combine[Combine monthly summaries]
-        Combine --> Complete[Complete Data Combinations<br>fill missing rows]
-        Complete --> Marginals[Optional: Calculate Marginal Totals]
-        Marginals --> MovingAvg[Optional: Calculate Moving Average]
-        MovingAvg --> Suppression[Optional: Add Suppression Flags]
-        Suppression --> Rounding[Apply Rounding to Estimate Levels]
-        Rounding --> Ratios[IF Ratio/Distribution: Calculate Ratios]
-        Ratios --> Change[IF Change: Calculate Period Changes]
-        Change --> Differences[IF Difference: Calculate Category Differences]
-        Differences --> Variance[IF Bootstraps: Calculate Bootstrap Variance]
-        Variance --> CombineAll[Combine All Processed Estimates]
-    end
-    
-    CombineAll --> Labels
-    FinalizeMicro --> Labels[Optional: Apply Human-Readable Labels]
-    
-    Labels --> CleanUp[Final Result Clean-up]
-    CleanUp --> FinalOut([Final LFS Data Output])
-```
 
 
 ## Built-in Visualizations
