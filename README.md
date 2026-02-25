@@ -87,6 +87,8 @@ graph TD
     Labels --> CleanUp[Final Result Clean-up]
     CleanUp --> FinalOut([Final LFS Data Output])
 ```
+
+
 ## Complete parameters of lfs_table
 
 ```r
