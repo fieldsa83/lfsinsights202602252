@@ -185,7 +185,8 @@ graph TD
     FinalizeMicro --> CleanUp
     CleanUp --> FinalOut([Final LFS Data Output])
 ```
-```markdown
+
+
 ## Built-in Visualizations
 
 The package includes standardized plotting functions that use `plotly` to automatically handle formatting, source annotations, and responsive layouts.
@@ -213,4 +214,4 @@ lfs_plotly_bar(
   title = "Employment Levels by Province"
 )
 ```
-```
+
