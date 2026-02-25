@@ -1,0 +1,74 @@
+{
+  "INDUSTRY": {
+    "EN": {
+      "11": "11 Agriculture",
+      "21": "21 Forestry, fishing, mining, quarrying, oil and gas",
+      "22": "22 Utilities",
+      "23": "23 Construction",
+      "31": "31-33 Manufacturing",
+      "41": "41 Wholesale trade",
+      "44": "44-45 Retail trade",
+      "48": "48-49 Transportation and warehousing",
+      "51": "51,71 Information, Culture and Recreation",
+      "52": "52-53 Finance, insurance, real estate, rental and leasing",
+      "54": "54 Professional, scientific and technical services",
+      "55": "55-56 Business, building and other support services",
+      "61": "61 Educational services",
+      "62": "62 Health care and social assistance",
+      "72": "72 Accommodation and food services",
+      "81": "81 Other services (except public administration)",
+      "91": "91 Public administration"
+    },
+   "FR": {
+      "11": "11 Agriculture",
+      "21": "21 Extraction minière, exploitation en carrière, et extraction de pétrole et de gaz",
+      "22": "22 Services publics",
+      "23": "23 Construction",
+      "31": "31-33 Fabrication",
+      "41": "41 Commerce de gros",
+      "44": "44-45 Commerce de détail",
+      "48": "48-49 Transport et entreposage",
+      "51": "51,71 Information, culture et loisirs",
+      "52": "52-53 Finance, assurances, services immobiliers et services de location et de location à bail",
+      "54": "54 Services professionnels, scientifiques et techniques",
+      "55": "55-56 Services aux entreprises, services relatifs aux bâtiments et autres services de soutien",
+      "61": "61 Services d'enseignement",
+      "62": "62 Soins de santé et assistance sociale",
+      "72": "72 Services d'hébergement et de restauration",
+      "81": "81 Autres services (sauf les administrations publiques)",
+      "91": "91 Administrations publiques"
+    }
+  },
+  "LFSSTAT3": {
+    "EN": {
+      "1": "Employed",
+      "2": "Unemployed",
+      "3": "Not in labour force"
+    }
+  },  
+  "AGEGROUP_MAIN": {
+    "EN": {
+      "1": "15-24",
+      "2": "25-54",
+      "3": "55+"
+    }
+  },
+  "ENT_ROTATION": {
+    "EN": {
+      "1": "Entering rotation",
+      "2": "Other rotations"
+    }
+  },
+  "PERIODIMM": {
+    "EN": {
+      "1": "Born in Canada",
+      "3": "Immigrants, landed 5 or less years earlier",
+      "5": "Immigrants, landed more than 5 to 10 years earlier",
+      "6": "Immigrants, landed more than 10 years earlier",
+      "7": "Immigrants, landed but missing duration",
+      "8": "Not a landed immigrant nor born in Canada",
+      "9": "Unknown"
+    }
+  }
+}
+	

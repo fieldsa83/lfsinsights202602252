@@ -1,0 +1,29 @@
+Package: lfsinsights
+Title: LFS Insights
+Version: 0.6.1
+Authors@R: person("Andrew", "Fields", email = "andrew.fields@statcan.gc.ca", role = c("aut", "cre"))
+Description: Functions to read and parse LFS data into nice tables. 
+License: Unknown
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports: 
+    dplyr,
+    tidyr,
+    lubridate,
+    rlang,
+    tibble,
+    zoo,
+    vroom,
+    haven,
+    jsonlite,
+    stats,
+    utils,
+    forcats,
+    purrr,
+    tictoc,                      
+    shiny,                      
+    shinyWidgets,               
+    shinyjs,                    
+    shinyAce,
+    plotly

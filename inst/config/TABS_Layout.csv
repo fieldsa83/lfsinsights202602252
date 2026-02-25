@@ -1,0 +1,191 @@
+Name,Start,End,Length,Decimals,FORMAT,Description,Universe,Table,PQ format,labels,Min,Max,keep
+CMATAB,1,2,2,0,character,Census metropolitan areas (CMA) and census agglomerations (CA).,All respondents,Geography,string,1,0,99,1
+EIERTAB,3,5,3,0,character,Unemployment insurance region.,All respondents,Geography,string,1,0,999,1
+PROV,6,7,2,0,character,2-digit province code.,All respondents,Geography,string,1,0,62,1
+PROV1,8,8,1,0,character,1-digit province code.,All respondents,Geography,string,1,0,9,1
+PSEUDOUI,9,9,1,0,character,Pseudo UIC region. Pseudo in Quebec and Ontario since they have more than 10 regions.,All respondents,Geography,string,0,0,9,1
+FRAME,10,10,1,0,character,Large CMAs will have major geographic and/or some regional strata identified by this digit; e.g. Québec has two Economic Regions.,All respondents,Geography,string,0,0,9,1
+STRAFRAM,11,12,2,0,character,Usually a super-stratum.,All respondents,Geography,string,0,0,99,1
+TYPE,13,14,2,0,character,Sample design type.,All respondents,Survey_id,string,0,0,99,1
+CLUST,15,17,3,0,character,Cluster Id. ,All respondents,Survey_id,string,0,0,999,1
+ROTATION,18,18,1,0,character,Rotation number.,All respondents,Survey_id,string,1,1,8,1
+LISTLINE,19,22,4,0,character,Sequential number assigned to every dwelling within a cluster.,All respondents,Survey_id,string,0,0,9999,1
+MULT,23,23,1,0,character,Multiple code used for structures that have more than one dwelling.,All respondents,Survey_id,string,0,0,9,1
+REPLICAT,24,25,2,0,character,Replicate number used in variance estimation.,All respondents,Survey_id,string,0,1,18,1
+LINE,26,27,2,0,character,Sequential number that uniquely identifies a person within a household.,All respondents,Survey_id,string,0,0,99,1
+FAMID,28,28,1,0,character,Uniquely identifies an economic family in a household.,All respondents,Survey_id,string,0,A,Z,1
+SYEAR,29,32,4,0,numeric,Survey year.,All respondents,Date,int32,0,1900,2100,1
+SMTH,33,34,2,0,numeric,Survey month.,All respondents,Date,int32,0,1,12,1
+PROXY,35,35,1,0,character,Proxy/non-proxy response.,All respondents,Interview,string,1,1,2,1
+PHONEINT,36,36,1,0,character,Type of interview.,All respondents,Interview,string,1,1,2,1
+DRESP,37,38,2,0,character,Final Application Status Outcome Code. ,All respondents,Interview,string,0,0,99,1
+ACTCODE,39,39,1,0,character,Final Application Status Action code,All respondents,Interview,string,0,0,13,1
+RCDO,40,40,1,0,character,Record output flag.,All respondents,Interview,string,1,0,9,1
+REGOFF,41,42,2,0,character,Regional office.,All respondents,Interview,string,1,0,99,1
+DOCKET,43,48,6,0,character,Uniquely identifies each household in the sample within a R.O. (January 1976 to August 1996).,All respondents,Survey_id,string,0,0,999999,1
+BIRTH,49,49,1,0,character,Flag to indicate whether a birth or non-birth record.,All respondents,Survey_id,string,1,0,1,1
+HHSIZE,50,51,2,0,character,Number of people in a household.,All respondents,Survey_id,string,0,0,99,1
+DWELCODE,52,52,1,0,character,Type of dwelling.,All respondents,Survey_id,string,1,0,9,1
+DWELRENT,53,53,1,0,character,Indicates whether the dwelling was owned or rented.,All respondents,Survey_id,string,1,1,4,1
+RDSNSAMP,54,54,1,0,character,Serves to identify the sample design from which the dwelling was selected.,All respondents,Survey_id,string,1,0,4,1
+QUESTFLG,55,55,1,0,character,Flag to indicate vintage of questionnaire.,Al respondents,Survey_id,string,1,0,2,1
+HO_PATH,56,56,1,0,character,The path value assigned during Head Office Processing.,Respondents 15+,Labour_satatus,string,1,1,7,1
+DECRULE,57,61,5,0,character,Decision rules.,Respondents 15+,Labour_satatus,string,0,0,99999,1
+LFSSTAT,62,62,1,0,character,Detailed labour force status.,Respondents 15+,Labour_satatus,string,1,1,7,1
+FINALWT,63,67,5,0,numeric,Final weight,All respondents,Weights,int32,0,0,99999,1
+CLUSTWT,68,72,5,4,numeric,Cluster weight,All respondents,Weights,pa.float32(),0,0,9.9999,1
+STABILWT,73,79,7,6,numeric,Stabilization weight,All respondents,Weights,pa.float32(),0,0,9.999999,1
+THEORWT,80,87,8,4,numeric,Theoretical weight,All respondents,Weights,pa.float32(),0,0,9999.9999,1
+BALFACT,88,93,6,4,numeric,Balance factor,All respondents,Weights,pa.float32(),0,0,99.9999,1
+SUBWT,94,102,9,4,numeric,Sub-weight,All respondents,Weights,pa.float32(),0,0,99999.9999,1
+RUFAC,103,109,7,6,numeric,Rural/urban factor,All respondents,Weights,pa.float32(),0,0,9.999999,1
+SPECWT,110,112,3,0,numeric,Special weight,All respondents,Weights,int32,0,0,999,1
+FILLER1,113,116,4,0,character,4 character filler.,,NA,string,0,,,1
+PROV2,117,118,2,0,character,2-digit province code.,All respondents,Geography,string,0,,,1
+AGE,119,121,3,0,numeric,Age of respondent as of the end of LFS reference week.,All respondents,Individual_char,int32,0,0,130,1
+GENDER,122,122,1,0,character,Sex of respondent.,All respondents,Individual_char,string,1,1,2,1
+MARSTAT,123,123,1,0,character,Marital status of respondent.,All respondents,Individual_char,string,1,1,6,1
+RELREF,124,124,1,0,character,Respondents relationship to reference person.,All respondents,Individual_char,string,1,1,9,1
+EDUCLEV,125,125,1,0,character,Respondents highest level of education ever completed.,All respondents,Education,string,1,0,9,1
+ELEMHS,126,126,1,0,character,Respondents highest grade of elementary or high school ever completed.,All respondents,Education,string,1,0,5,1
+HSGRAD,127,127,1,0,character,Question to determine if respondent graduated from high school.,All respondents whose highest grade of elementary or high school ever completed was grade 11 to 13,Education,string,1,0,1,1
+MEMBSTAT,128,128,1,0,character,Membership status of a person in a household.,All respondents,Individual_char,string,1,1,2,1
+MJH,129,129,1,0,character,Multiple job holder status.,Currently employed ,Employment,string,1,1,3,1
+EVERWORK,130,130,1,0,character,Identifies if a person has worked in the last year.,Not currently employed,Employment,string,1,1,3,1
+MLASTWRK,131,132,2,0,numeric,Month last worked.,Not currently employed but worked at some time in the past,Employment,int32,0,1,12,1
+YLASTWRK,133,136,4,0,numeric,Year last worked.,Not currently employed but worked at some time in the past,Employment,int32,0,1900,2100,1
+FTPTLAST,137,137,1,0,character,Full-time or part-time status of last job.,Not currently employed but worked within the previous twelve months,Employment,string,1,1,2,1
+COWMAIN,138,138,1,0,character,"Class of worker, main job.","Current job if employed or last job if worked within the previous twelve months (excludes not in the labour force, permanently unable to work)",Employment,string,1,1,7,1
+NAICS_5,139,143,5,0,character,North American Industry Classification System with a leading zero,"Current job if employed or last job if worked within the previous twelve months (excludes not in the labour force, permanently unable to work)",Employment,string,0,1100,9999,1
+NOC_5,144,148,5,0,character,Standard occupational classification.,"Current job if employed or last job if worked within the previous twelve months (excludes not in the labour force, permanently unable to work)",Employment,string,0,10,99999,1
+FILLER2,149,149,1,0,character,1 character filler.,,NA,string,0,,,1
+MSTRTWRK,150,151,2,0,numeric,Month started working.,"Current job if employed or last job if worked within the previous twelve months (excludes not in the labour force, permanently unable to work)",Employment,int32,0,1,12,1
+YSTRTWRK,152,155,4,0,numeric,Year started working.,"Current job if employed or last job if worked within the previous twelve months (excludes not in the labour force, permanently unable to work)",Employment,int32,0,1900,2100,1
+WHYABSNT,156,156,1,0,character,Reason absent full-week.,"Currently employed, absent from work",Employment,string,1,0,9,1
+WKSAWAY,157,159,3,0,numeric,Number of weeks continually absent from work.,"Currently employed, absent from work",Employment,int32,0,0,999,1
+PAYAWAY,160,160,1,0,character,"Paid for time off, full-week absence only.","Currently employed, absent from work, employees and self-employed incorporated only.",Employment,string,1,1,2,1
+HRSVARY,161,161,1,0,character,Question to determine if the number of hours worked varies from week to week.,Currently employed,Hours,string,1,1,2,1
+UHRSMAIN,162,165,4,1,numeric,Usual hours worked per week at main job,Currently employed,Hours,pa.float32(),0,0,168,1
+AHRSMAIN,166,169,4,1,numeric,Actual hours worked in reference week at main job,Currently employed,Hours,pa.float32(),0,0,168,1
+FTPTMAIN,170,170,1,0,character,Full-time or part-time work schedule.,Currently employed,Hours,string,1,1,2,1
+HRSAWAY,171,174,4,1,numeric,"Number of hours away from work in reference week, part-week absence","Currently employed, at work, employees only",Employment,pa.float32(),0,0,168,1
+WHYAWAY,175,176,2,0,character,Main reason for part-week absence in reference week.,"Currently employed, at work, employees only",Employment,string,1,0,12,1
+PAIDOT,177,180,4,1,numeric,Number of paid overtime hours worked in reference week,"Currently employed, at work, employees only",Earning,pa.float32(),0,0,168,1
+UNPAIDOT,181,184,4,1,numeric,Number of unpaid overtime or extra hours worked in reference week,"Currently employed, at work, employees only",Earning,pa.float32(),0,0,168,1
+XTRAHRS,185,188,4,1,numeric,"Total overtime hours worked in reference week, paid and unpaid","Currently employed, at work, employees only",Hours,pa.float32(),0,0,168,1
+WHYPT,189,190,2,0,character,Main reason for part-time employment main job.,"Currently employed, part-time usual work hours at their main or only job were below 30 per week",Employment,string,1,0,10,1
+WHYPTOLD,191,191,1,0,character,Main reason for part-time employment all jobs.,"Currently employed, part-time usual work hours at their main or only job were below 30 per week",Employment,string,1,0,7,1
+INVOLPT,192,192,1,0,character,Identification of involuntary part-time.,"Currently employed, part-time",Employment,string,1,1,4,1
+TENURE,193,195,3,0,numeric,Tenure of current job,Currently employed only,Employment,int32,0,1,999,1
+HRLYEARN,196,201,6,2,numeric,Usual hourly earnings,"Currently employed, employees",Earning,pa.float32(),0,1,9999.99,1
+WKLYEARN,202,208,7,2,numeric,Usual weekly earnings,"Currently employed, employees",Earning,pa.float32(),0,1,99999.99,1
+HRLYWORK,209,209,1,0,character,Identifies if respondent is paid by the hour.,"Currently employed, employees",Earning,string,1,1,2,1
+TIPS,210,210,1,0,character,Identifies if respondent usually receives tips or commissions.,"Currently employed, employees",Earning,string,1,1,2,1
+FILLER3,211,218,8,0,character,8 character filler.,,NA,string,0,,,1
+URSTAT,219,219,1,0,character,"As of January 2011, 2011 Census definition of Urban Status.",All respondents,Geography,string,1,1,6,1
+FTSTSRCH,220,220,1,0,character,Identifies full-time students actively or passively job searching.,"Currently not in the labour force, full-time students",Student,string,1,1,2,1
+FILLER4,221,222,2,0,character,2 character filler.,,NA,string,0,,,1
+UNION_CA,223,223,1,0,character,Union status.,"Currently employed, employees",Employment,string,1,1,3,1
+PERMTEMP,224,224,1,0,character,Permanent or temporary job status,"Currently employed, employees",Employment,string,1,1,6,1
+ESTSIZE,225,225,1,0,character,Number of employees at the location of employment i.e. building or compound.,"Currently employed, employees",Company,string,1,1,4,1
+OTHERLOC,226,226,1,0,character,Question to identify if employer operates at more than one location.,"Currently employed, employees",Company,string,1,1,2,1
+FIRMSIZE,227,227,1,0,character,Total number of persons employed at all locations.,"Currently employed, employees",Company,string,1,1,4,1
+COWOTHER,228,228,1,0,character,Class of worker other job.,"Currently employed, multiple job holders and job changers",Employment,string,1,1,7,1
+UHRSOTH,229,232,4,1,numeric,"Usual hours worked per week at other job, excluding overtime","Currently employed, multiple job holders and job changers",Hours,pa.float32(),0,1,168,1
+AHRSOTH,233,236,4,1,numeric,Actual hours worked in reference week at other job,"Currently employed, multiple job holders and job changers",Hours,pa.float32(),0,0,168,1
+UTOTHRS,237,240,4,1,numeric,Total usual hours worked per week at all jobs.,Currently employed,Hours,pa.float32(),0,1,168,1
+ATOTHRS,241,244,4,1,numeric,Total actual hours worked in reference week at all jobs,Currently employed,Hours,pa.float32(),0,0,168,1
+DURUNEMP,245,247,3,0,numeric,Duration of unemployment,Unemployed temporary layoffs and job searchers only,Not_working,int32,0,0,999,1
+FLOWUNEM,248,248,1,0,character,Flows into unemployment.,Currently unemployed,Not_working,string,1,1,8,1
+UNEMFTPT,249,249,1,0,character,Job seekers by type of work sought and temporary layoffs by work status of last job,Currently unemployed,Not_working,string,1,1,5,1
+NLFDTAIL,250,250,1,0,character,Persons not in the labour force recoded into 9 groups.,Currently not in the labour force only,Not_working,string,1,1,9,1
+WHYLEFT,251,252,2,0,character,Reason left or lost last job,Not currently employed but worked within the previous twelve months,Not_working,string,1,0,18,1
+WHYLEFT2,253,253,1,0,character,Reason left or lost last job.,Not currently employed but worked within the previous twelve months,Not_working,string,1,0,7,1
+DURJLESS,254,256,3,0,numeric,Duration of joblessness or months since last worked,Not currently employed but worked at some time in the past,Not_working,int32,0,0,999,1
+AVAILABL,257,257,1,0,character,Identifies if a person was available for work during reference week.,"Temporary layoffs, job searchers and future starts, and those who wanted work but did not look because believes no suitable work available",Labour_status,string,1,1,9,1
+LKPUBAG,258,258,1,0,character,"Unemployed, checked with public employment agency.","Currently unemployed, job searchers",Job_search,string,1,1,1,1
+LKPRIVAG,259,259,1,0,character,"Unemployed, checked with private employment agency.","Currently unemployed, job searchers",Job_search,string,1,2,2,1
+LKUNION,260,260,1,0,character,"Unemployed, checked with union.","Currently unemployed, job searchers",Job_search,string,1,3,3,1
+LKEMPLOY,261,261,1,0,character,"Unemployed, checked with employers directly.","Currently unemployed, job searchers",Job_search,string,1,4,4,1
+LKRELS,262,262,1,0,character,"Unemployed, checked with friends or relatives.","Currently unemployed, job searchers",Job_search,string,1,5,5,1
+LKANSADS,263,263,1,0,character,"Unemployed, placed or answered job ads.","Currently unemployed, job searchers",Job_search,string,1,6,6,1
+LKATADS,264,264,1,0,character,"Unemployed, looked at job ads","Currently unemployed, job searchers",Job_search,string,1,7,7,1
+LKOTHER,265,265,1,0,character,"Unemployed, used other methods.","Currently unemployed, job searchers",Job_search,string,1,0,0,1
+RECALL,266,266,1,0,character,"Laid off, expectation of recall to former job.","Absent from work due to temporary layoff or left last job because of business conditions, employees only",Not_working,string,1,1,5,1
+PRIORACT,267,267,1,0,character,Main activity before started looking for work.,"Currently unemployed, job searchers",Labour_status,string,1,0,3,1
+WANTJOB,268,268,1,0,character,Question to identify if respondent wanted a job in the reference week.,Asked only of a subgroup of not in the labour force (if not permanently unable to work and age less than 65 years),Labour_status,string,1,1,3,1
+WHYNOLK,269,269,1,0,character,Reason did not look for work in the reference week.,"Persons not in the labour force who say they ""wanted a job"" in the reference week",Labour_status,string,1,0,9,1
+TLOLOOK,270,270,1,0,character,Looked for a job with a different employer in the past 4 weeks.,"Currently unemployed, temporary layoffs",Job_search,string,1,1,2,1
+STUDENT,271,271,1,0,character,Student status.,Respondents aged 15 to 64 years only,Student,string,1,1,3,1
+SCHOOL,272,272,1,0,character,Kind of school.,Full-time and part-time students aged 15 to 64 years only,Student,string,1,0,3,1
+RETSTUDT,273,273,1,0,character,Full-time students in March of this year by their fall intentions.,Respondents aged 15 to 24 years only,Student,string,1,1,4,1
+NEWHIRE,274,274,1,0,character,"New hire, started work between end of previous reference week and end of this reference week.",Currently employed or new separation and started job since last reference week,Employment,string,0,1,1,1
+NEWPSEP,275,275,1,0,character,Permanent separation since reference period of previous month.,New hire or not employed and separated from a job since last reference week,Employment,string,0,1,1,1
+YLEFTPRV,276,277,2,0,character,Main reason left previous job.,"Currently employed, separated from previous job since reference period of previous month and subsequently hired to new job",Previous_employment,string,1,0,18,1
+FTPTPREV,278,278,1,0,character,Usually worked more or less than 30 hours per week at previous job.,"Currently employed, separated from previous job since reference period of previous month and subsequently hired to new job",Previous_employment,string,1,1,2,1
+AGYOWNK,279,280,2,0,numeric,Age of youngest own child 0 to 24 years,On parent(s) record only (reference person / spouse),Family,int32,0,0,24,1
+OWNK0,281,281,1,0,numeric,Number of own children aged less than 1 year,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK0102,282,282,1,0,numeric,Number of own children aged 1 and 2 years,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK03,283,283,1,0,numeric,Number of own children aged 3 years,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK04,284,284,1,0,numeric,Number of own children aged 4 years,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK05,285,285,1,0,numeric,Number of own children aged 5 years,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK0612,286,286,1,0,numeric,Number of own children aged 6 to 12 years,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK1315,287,287,1,0,numeric,Number of own children aged,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK16,288,288,1,0,numeric,Number of own children aged,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK17,289,289,1,0,numeric,Number of own children aged,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK18,290,290,1,0,numeric,Number of own children aged,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK19,291,291,1,0,numeric,Number of own children aged,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK20,292,292,1,0,numeric,Number of own children aged,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK2124,293,293,1,0,numeric,Number of own children aged,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OWNK25PL,294,294,1,0,numeric,Number of own children aged 25 years and over,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+SCH1624,295,295,1,0,numeric,Number of own children aged 16 to 24 years currently attending school,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+NSCH1624,296,296,1,0,numeric,Number of own children aged 16 to 24 years not currently attending school,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+EMP1517,297,297,1,0,numeric,Number of own children aged 15 to 17 years currently employed,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+EMP1824,298,298,1,0,numeric,Number of own children aged 18 to 24 years currently employed,On parent(s) record only (reference person / spouse),Family,int32,0,1,9,1
+OTHK017,299,299,1,0,numeric,Number of other children aged 0 to 17 years who are foster children or related to the reference person,On reference person / spouse record only,Family,int32,0,1,9,1
+PT1_EDUC,300,300,1,0,character,"Parent 1's education group. Parent 1 is male parent. If 2 male parents, it is reference person; if 2 female parents, it is spouse",On own son/daughter record only,Family,string,0,0,9,1
+PT1_LFST,301,301,1,0,character,Parent 1's labour force status.,On own son/daughter record only,Family,string,0,0,7,1
+PT1_NAIC,302,306,5,0,character,"Parent 1's standard industrial classification, main or only job if employed, last job if worked within the previous twelve months.",On own son/daughter record only,Family,string,0,1100,9999,1
+FILLER5,307,310,4,0,character,"4 character filler.	Space previously occupied by  PT1_NOC. PT1_NOC is available on TABPLUS",,NA,string,0,,,1
+PT2_EDUC,311,311,1,0,character,"Parent 2's education group. Parent 2 is female parent. If 2 female parents, it is reference person; if 2 male parents, it is spouse",On own son/daughter record only,Family,string,0,0,9,1
+PT2_LFST,312,312,1,0,character,Parent 2's labour force status.,On own son/daughter record only,Family,string,0,0,7,1
+PT2_NAIC,313,317,5,0,character,"Parent 2's standard industrial classification, main or only job if employed, last job if worked within the previous twelve months.",On own son/daughter record only,Family,string,0,1100,9999,1
+FILLER6,318,321,4,0,character,"4 character filler.	Space previously occupied by  PT2_NOC. PT2_NOC is available on TABPLUS",,NA,string,0,,,1
+EFAMEMPL,322,323,2,0,numeric,Total number of employed persons in the economic family,All respondents,Family,int32,0,0,99,1
+EFAMNWKE,324,325,2,0,numeric,Total number of employees in the economic family,All respondents,Family,int32,0,0,99,1
+EFAMSIZE,326,327,2,0,numeric,Number of individuals in the economic family,All respondents,Family,int32,0,0,99,1
+EFAMTYPE,328,329,2,0,character,Type of economic family.,All respondents,Family,string,1,1,18,1
+EFAMUHRS,330,333,4,1,numeric,Sum of total usual hours worked per week at all jobs for all employed economic family members,All respondents,Family,pa.float32(),0,0,999.9,1
+EFAMUNEM,334,335,2,0,numeric,Total number of unemployed persons in the economic family,All respondents,Family,int32,0,0,99,1
+EFAMWKE,336,343,8,2,numeric,Sum of usual weekly earnings for all employees in the economic family,All respondents,Family,pa.float32(),0,0,999999.99,1
+SP_PRES,344,344,1,0,character,Identifies if spouse present in economic family.,On reference persons and spouses records only,Family,string,1,1,2,1
+SP_AGE,345,347,3,0,numeric,Spouse's detailed age,On reference persons and spouses records only,Family,int32,0,15,130,1
+SP_EDUC,348,348,1,0,character,Spouse's education group.,On reference persons and spouses records only,Family,string,1,0,9,1
+SP_STUDT,349,349,1,0,character,Spouse's student status and kind of school currently attending,On reference persons and spouses records only,Family,string,1,0,8,1
+SP_LFSST,350,350,1,0,character,Spouse's labour force status,On reference persons and spouses records only,Family,string,1,0,7,1
+SP_MJH,351,351,1,0,character,"Spouse's multiple jobholder status, currently employed only.",On reference persons and spouses records only,Family,string,1,0,3,1
+SP_COWM,352,352,1,0,character,"Spouse's class of work, main or only job if employed, last job if worked within the previous twelve months",On reference persons and spouses records only,Family,string,1,0,7,1
+SP_NAIC,353,357,5,0,character,"Spouse's standard industrial classification, main or only job if employed, last job if worked within the previous twelve months.",On reference persons and spouses records only,Family,string,0,1100,9999,1
+FILLER7,358,361,4,0,character,"4 character filler.	Space previously occupied by  SP_NOC. SP_NOC is available on TABPLUS",,NA,string,0,,,1
+SP_TENR,362,364,3,0,numeric,"Spouse's tenure of current job, currently employed only",On reference persons and spouses records only,Family,int32,0,1,999,1
+SP_UHRSM,365,368,4,1,numeric,"Spouse's usual hours worked per week at main job, currently employed only",On reference persons and spouses records only,Family,pa.float32(),0,1,999.9,1
+SP_UHRST,369,372,4,1,numeric,"Spouse's total usual hours worked per week at all jobs, currently employed only",On reference persons and spouses records only,Family,pa.float32(),0,1,999.9,1
+SP_FTPTM,373,373,1,0,character,"Spouse's full-time or part-time work schedule, currently employed only.",On reference persons and spouses records only,Family,string,1,0,9,1
+SP_HEARN,374,379,6,2,numeric,"Spouse's usual hourly earnings, currently employed, employees only",On reference persons and spouses records only,Family,pa.float32(),0,1,9999.99,1
+SP_WEARN,380,386,7,2,numeric,"Spouse's usual weekly earnings, currently employed, employees only",On reference persons and spouses records only,Family,pa.float32(),0,1,99999.99,1
+SP_DURUN,387,389,3,0,numeric,"Spouse's duration of unemployment, unemployed job searchers and temporary layoffs only",On reference persons and spouses records only,Family,int32,0,1,999,1
+CNTRYBTH,390,392,3,0,character,Country of birth according to boundaries at time of data collection.,Persons aged 14 and over,Immigration,string,1,14,999,1
+CNTRYEDU,393,395,3,0,character,"Country where person completed his/her highest post-secondary degree, certificate or diploma (according to boundaries at time of data collection).","Landed immigrants (LANDIMM = 1) with a post-secondary degree, certificate or diploma (EDUCLEV = 5, 6, 7, 8 or 9).",Immigration,string,0,14,999,1
+LANDIMM,396,396,1,0,character,"Identifies if a person is now, or has ever been, a landed immigrant (permanent resident) in Canada.",Persons aged 14 and over who were not born in Canada (CNTRYBTH not equal to 014).,Immigration,string,1,1,2,1
+LANDYR,397,400,4,0,numeric,Year person first became a landed immigrant (permanent resident) in Canada.,Landed immigrants (LANDIMM = 1).,Immigration,int32,0,1879,2200,1
+LANDMTH,401,402,2,0,numeric,Month person first became a landed immigrant (permanent resident) in Canada.,Landed immigrants (LANDIMM = 1) with a year of landing within the past five years ((SYEAR - LANDYR) is less or equal to 5).,Immigration,int32,0,1,12,1
+INDGSTAT,403,403,1,0,character,Indigenous identity,"January 2003 to March 2004, respondents aged 15 and over in Alberta;April 2004 to December 2006, respondents aged 15 and over, in Manitoba, Saskatchewan, Alberta and British Columbia; January 2007 to present, respondents age 14 and over who were born in Canada, the United States or Greenland, for all provinces    ",Immigration,string,1,1,2,1
+INDGNAI,404,404,1,0,character,Indigenous identity - North American Indian.,Respondents who selected North American Indian as Indigenous group.,Indigineous,string,0,1,1,1
+INDGMET,405,405,1,0,character,Indigenous identity - Métis.,Respondents who selected Métis as Indigenous group.,Indigineous,string,0,2,2,1
+INDGINU,406,406,1,0,character,Indigenous identity - Inuit.,Respondents who selected Inuit as Indigenous group.,Indigineous,string,0,3,3,1
+IVMWT,407,411,5,0,numeric,Indigenous/Visible minority weight,All respondents in the provinces,Weights,int32,0,0,99999,1
+VISMIN,412,413,2,0,character,Detailed visible minority population group,"Starting January 2022, all respondents aged 14 and older in the provinces.",Immigration,string,1,1,14,1
+VISMINFL,414,414,1,0,character,Visible minority/Indigenous flag,"Starting January 2022, all respondents aged 14 and older in the provinces.",individual_char,string,1,1,3,1
+CMACA,415,419,5,0,character,"First two digits are province, and last three digits are Census Metropolitan Area or Census Agglomeration","All respondents from January 2006 to present, based on 2016 Census definitions",Geography,string,0,0,99999,1
+CDCSD,420,426,7,0,character,"First two digits are province, next two are Census Division and last three are Census Subdivision.",All respondents.,Geography,string,0,0,9999999,1
+ERTAB,427,430,4,0,character,Economic regions.,All respondents,Geography,string,1,1000,6300,1

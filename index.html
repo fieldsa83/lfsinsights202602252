@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LFS Table Configurator</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='black'/%3E%3Ctext x='16' y='20' text-anchor='middle' fill='white' font-family='Arial Black' font-size='13' font-weight='bold'%3ELFS%3C/text%3E%3C/svg%3E">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -webkit-system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            max-width: 700px; 
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(138, 177, 255, 0.1) 0%, rgba(138, 177, 255, 0.1) 100%);
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            font-family: impact, sans-serif;
+            font-weight: 400;
+            font-size: 4.5em;
+            letter-spacing: 1.2px;
+            transform: scaleX(1.1);
+            margin-top: 0px;
+            margin-bottom: 2px;
+            color: white;
+            text-align: center;
+            text-shadow: -12px 12px 0 black, -11px 11px 0 black, -10px 10px 0 black, -9px 9px 0 black, -8px 8px 0 black, -7px 7px 0 black, -6px 6px 0 black, -5px 5px 0 black, -4px 4px 0 black, -3px 3px 0 black, -2px 2px 0 black, -1px 1px 0 black, 1px 1px 0 black, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black;
+        }
+
+        .subtitle { margin-right: 15px; margin-bottom: 2px; }
+
+        .subtitle a, .subtitle a:visited { color: #007bff; text-decoration: none; }
+        .subtitle a:hover { text-decoration: underline; }
+
+        .form-section {
+            background: linear-gradient(135deg, rgba(138, 177, 255, 0.1) 0%, rgba(138, 177, 255, 0.1) 100%);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border: 1px solid black;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-section h3 {
+            margin: 0 0 16px 0;
+            font-size: 1.25em; 
+            font-weight: 700; 
+            color: black;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 20px; 
+            margin-bottom: 20px;
+            align-items: center; 
+        }
+        
+        .form-label-column { flex: 0 0 200px; display: flex; align-items: center; }
+        .form-input-column { flex: 1; display: flex; align-items: center; }
+        .form-input-column .form-group { margin-bottom: 0; }
+
+        .form-group { flex: 1; min-width: 150px; position: relative; }
+        .form-group.fixed-width { flex-grow: 0; flex-shrink: 0; flex-basis: auto; }
+       
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9375em; 
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; 
+            padding: 9px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 1em; 
+            font-family: inherit;
+            background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: black;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+        
+        .form-group select:disabled, .form-group input:disabled,
+        input[type="number"]:disabled, button:disabled { 
+          background-color: #e9ecef !important; 
+          cursor: not-allowed !important;
+          opacity: 0.7 !important; 
+        }
+
+        .form-group-disabled, .form-label-column.form-group-disabled,
+        .form-input-column.form-group-disabled, .checkbox-item.form-group-disabled {
+          opacity: 0.5;
+          pointer-events: none; 
+        }
+
+        .form-group-disabled label, .form-group-disabled select, .form-group-disabled input { cursor: not-allowed !important; }
+        .control-disabled { opacity: 0.5; pointer-events: none; }
+        .control-disabled > * { cursor: not-allowed !important; }
+
+        .help-icon {
+            display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px;
+            background: #e5e7eb; border-radius: 50%; font-size: 10px; color: #6b7280; cursor: help;
+            vertical-align:text-top; margin-left: 3px; font-weight: bold; transition: all 0.2s ease;
+        }
+        .help-icon:hover { background: #3b82f6; color: white; }
+        .help-icon::before { content: "?"; }
+
+        .collapsible {
+            cursor: pointer; color: #007bff; text-decoration: none; display: flex; align-items: center; gap: 8px;
+            margin: 20px 0 15px 0; font-weight: 500; font-size: 0.9375em; 
+        }
+        .collapsible:hover { text-decoration: underline; }
+        .collapsible-content { display: none; margin-top: 15px; width: 100%; }
+        .collapsible-content.show { display: block; }
+        .arrow { transition: transform 0.3s ease; font-size: 0.75em; }
+        .arrow.down { transform: rotate(90deg); }
+
+        .checkbox-grid { display: flex; gap: 30px; width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+        .checkbox-grid .checkbox-item { flex-grow: 0; flex-shrink: 0; flex-basis: auto; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; }
+        .checkbox-item input[type="checkbox"] { width: auto; margin: 0; }
+
+        .estimate-card { border: 1px solid #e9ecef; border-radius: 8px; margin-bottom: 20px; background: white; overflow: hidden; }
+        .estimate-header { background: #46536b; padding: 12px 20px; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+        .estimate-title { font-weight: 600; color: white; font-size: 1.05em; }
+        .estimate-content { padding: 20px; }
+
+        input::placeholder { color: rgba(0, 0, 0, 0.223); }
+
+        /* Shared style for Ratio Fields AND Comparison Fields */
+        .ratio-fields, .comparison-fields {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .ratio-fields.show, .comparison-fields.show { display: block; }
+
+        .remove-btn {
+            background: none; border: none; color: white; cursor: pointer; font-size: 1em; padding: 6px 8px;
+            border-radius: 4px; display: flex; align-items: center; justify-content: center;
+        }
+        .remove-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+        .trash-icon { width: 16px; height: 16px; fill: currentColor; }
+
+        .add-estimate-btn {
+            display: block; width: 100%; padding: 12px; border: 1px dashed #46536b; background: white; color: #495057;
+            border-radius: 8px; font-size: 1em; cursor: pointer; margin-top: 20px;
+        }
+        .add-estimate-btn:disabled { opacity: 0.5; cursor: not-allowed; border-color: #ced4da; color: #6c757d; }
+        .add-estimate-btn:hover:not(:disabled) { border-color: #007bff; color: #007bff; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 1em; font-weight: 500; transition: all 0.2s; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:hover { background: #0056b3; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #545b62; }
+        .generate-btn-container { text-align: center; margin: 30px 0; }
+
+        .code-section { background: rgba(138, 177, 255, 0.1); border-radius: 8px; overflow: hidden; border: 1px solid black; }
+        .code-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #334155; position: relative; z-index: 1;
+        }
+        .code-header h3 { margin: 0; color: #e2e8f0; font-size: 1.125em; display: flex; align-items: center; gap: 8px; }
+        .code-output {
+            padding: 24px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 0.875em; line-height: 1.4; color: #e2e8f0; white-space: pre-wrap;
+            max-height: 720px; overflow-y: auto; background: #2d3748;
+        }
+
+        .validation-error { background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 6px; margin: 16px 0; border: 1px solid #f5c6cb; font-size: 0.875em; }
+        .required-field { border-color: #dc3545 !important; background-color: #fff5f5 !important; }
+        .required-label::after { content: " *"; color: #dc3545; font-weight: bold; }
+
+        .weight-var-container { display: flex; gap: 12px; }
+        .weight-var-container input, .weight-var-container select { flex: 1; }
+
+        .date-input-container { position: relative; display: flex; max-width: 100%; }
+        input[type="month"] {
+            border: 1px solid #e0e0e0; padding: 7px 40px; border-radius: 8px; font-size: 1.05em; background-color: #fff; color: #495057 !important;
+            transition: border-color 0.2s ease, background-color 0.2s ease; width: 100%; text-align: center; 
+        }
+        input[type="month"]:focus { border-color: black; background-color: #fff; outline: 0; box-shadow: none; }
+        
+        input[type="month"]::-webkit-datetime-edit,
+        input[type="month"]::-webkit-datetime-edit-fields-wrapper,
+        input[type="month"]::-webkit-datetime-edit-text,
+        input[type="month"]::-webkit-datetime-edit-month-field,
+        input[type="month"]::-webkit-datetime-edit-year-field { color: #495057 !important; }
+
+        input[type="month"]::-webkit-calendar-picker-indicator {
+            opacity: 0.6; cursor: pointer; transition: opacity 0.2s ease-in-out; margin-right: 2px;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23495057' d='M12 2H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 10H4V6h8v6z'/%3e%3c/svg%3e");
+            background-size: 16px 16px; background-repeat: no-repeat; background-position: center; width: 16px; height: 16px;
+        }
+        input[type="month"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+        
+        @-moz-document url-prefix() {
+            input[type="month"] {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23495057' d='M12 2H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 10H4V6h8v6z'/%3e%3c/svg%3e");
+                background-repeat: no-repeat; background-position: right 12px center; background-size: 16px 16px;
+            }
+        }
+
+        .month-nav-btn {
+            position: absolute; top: 17px; transform: translateY(-50%); background-color: transparent; border: none; color: #007bff; font-size: 1.8em; padding: 0 8px; cursor: pointer; line-height: 1; z-index: 1; 
+        }
+        .month-nav-btn:hover { color: #0056b3; }
+        .month-nav-btn.prev { left: 5px; }
+        .month-nav-btn.next { right: 5px; }
+        input[type=month]::-webkit-inner-spin-button, input[type=month]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .section-icon {
+            width: 20px; height: 20px; margin-right: 8px; flex-shrink: 0; stroke-width: 2;
+        }
+
+        .subsection-title {
+            display: block; margin-bottom: 8px; font-weight: 500; color: #495057; font-size: 0.9375em; width: 100%;
+        }
+        
+        .vertical-center-text {
+            display: flex; align-items: center; justify-content: center; height: 100%; font-weight: 600; color: #495057;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>LFS CONFIGURATOR</h1>
+        <p class="subtitle">An easy way to set parameters for the 
+            <a href="https://gitlab.k8s.cloud.statcan.ca/clmi-cimt/clmi-insights/lfsinsights">lfsinsights R package</a>
+        </p>  
+    </div>
+    
+    <div class="form-section">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="section-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Date Range
+        </h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="startDate">Start Month</label>
+                <div class="date-input-container">
+                    <button type="button" class="month-nav-btn prev" onclick="adjustMonth('startDate', -1)" aria-label="Previous month for start date">&lsaquo;</button>
+                    <input type="month" id="startDate">
+                    <button type="button" class="month-nav-btn next" onclick="adjustMonth('startDate', 1)" aria-label="Next month for start date">&rsaquo;</button>
+                </div>
+            </div>
+            <div style="width: 30px;"> </div>
+            <div class="form-group">
+                <label for="endDate">End Month</label>
+                 <div class="date-input-container">
+                    <button type="button" class="month-nav-btn prev" onclick="adjustMonth('endDate', -1)" aria-label="Previous month for end date">&lsaquo;</button>
+                    <input type="month" id="endDate"> <button type="button" class="month-nav-btn next" onclick="adjustMonth('endDate', 1)" aria-label="Next month for end date">&rsaquo;</button>
+                </div>
+            </div>
+        </div>
+        
+        <a class="collapsible" onclick="toggleCollapsible('advancedTiming')">
+            <span class="arrow" id="advancedTimingArrow">▶</span>
+            Additional date filtering options
+        </a>
+        <div class="collapsible-content" id="advancedTiming">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="filterMonths">Filter Months (optional)<span class="help-icon" title="Select specific months to filter your data. For example: 1, 2, 3"></span></label>
+                    <input type="text" id="filterMonths" placeholder="e.g., 1, 2, 3">
+                </div>
+                <div class="form-group">
+                    <label for="filterYears">Filter Years (optional)<span class="help-icon" title="Select specific years to filter your data. For example: 2024, 2025"></span></label>
+                    <input type="text" id="filterYears" placeholder="e.g., 2024, 2025">
+                </div>
+            </div>
+             <div class="form-row" id="movingAvgRow"> 
+                <div class="form-group fixed-width"> 
+                    <label for="movingAvg">Moving Average<span class="help-icon" title="Select this to aggregate monthly data into moving averages. Most commonly set to 1, 3, or 12. If LMSI or DLMI is selected as data source, this is a rolling SUM rather than an average."></span></label>
+                    <input type="number" id="movingAvg" value="1" min="1" style="width: 100px;"> 
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-section">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="section-icon">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            Data Sources
+        </h3>
+        
+        <div class="subsection-title">Monthly Data</div>
+        <div class="checkbox-grid" style="margin-bottom: 20px;"> 
+            <div class="checkbox-item">
+                <input type="checkbox" id="prerelease">
+                <label for="prerelease">Pre-release<span class="help-icon" title="Use pre-release data for the latest month (if available)"></span></label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="bootstraps">
+                <label for="bootstraps">Bootstraps<span class="help-icon" title="Include bootstrap weights for variance estimation."></span></label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="tabsPlus">
+                <label for="tabsPlus">TABS Plus<span class="help-icon" title="Include additional TABS Plus data variables"></span></label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="north">
+                <label for="north">North<span class="help-icon" title="Include territories data (Nunavut, N.W.T. and Yukon)"></span></label>
+            </div>
+        </div>
+
+        <div class="subsection-title">Supplemental Labour Market Indicators</div>
+        <div class="checkbox-grid">
+            <div class="checkbox-item">
+                <input type="checkbox" id="lmi">
+                <label for="lmi">LMI monthly<span class="help-icon" title="Labour Market Indicators (LMI) collected monthly beginning in January 2022."></span></label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="lmsi">
+                <label for="lmsi">LMSI quarterly<span class="help-icon" title="Labour Market and Socioeconomic Indicators (LMSI), collected quarterly beginning in July 2022. Use a 3 month moving average ending in either September (summer) or December (fall) (automatically converted to a rolling SUM)."></span></label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="dlmi">
+                <label for="dlmi">DLMI annual disability<span class="help-icon" title="Disability Labour Market Indicators (DLMI) collected annual. The DLMI began collection in January 2022. Use a 12 month moving average ending in December (automatically converted to a rolling SUM)."></span></label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-section">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="section-icon"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            Analysis Variables
+        </h3>
+        <div class="form-group" style="margin-bottom: 15px;" id="globalFilterConditionGroup">
+            <label for="filterCondition">
+                Global Filter Condition
+                <span class="help-icon" title="For example: AGE >= 15 & LFSSTAT %in% c(1,2). This filter is applied during data loading (after TABS and additional data like supplements, but before bootstraps.)."></span>
+            </label>
+            <textarea id="filterCondition" rows="1">AGE >= 15 & !is.na(LFSSTAT)</textarea>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 15px;" id="analysisVarsGroup"> <label for="analysisVars">
+                Analysis Variables
+                <span class="help-icon" title="Choose analysis variables for cross-tabulation (comma-separated, and typically upper case). For example: PROV, GENDER"></span>
+            </label>
+            <input type="text" id="analysisVars" value="PROV, GENDER">
+        </div>
+        
+        <div class="form-group" id="weightVarGroup"> <label for="weightVarSelect"> 
+                Weight Variable
+                <span class="help-icon" title="Specify weight variable (typically FINALWT, IVMWT or supp_weight)"></span>
+            </label>
+            <div class="weight-var-container">
+                <select id="weightVarSelect" onchange="updateWeightVar()">
+                    <option value="FINALWT">FINALWT</option>
+                    <option value="IVMWT">IVMWT</option>
+                    <option value="supp_weight">supp_weight</option>
+                    <option value="DLMI_WEIGHT">DLMI_WEIGHT</option>
+                    <option value="custom">Custom...</option>
+                </select>
+                <input type="text" id="weightVarCustom" placeholder="Enter custom weight variable" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section" id="estimatesSection">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="section-icon">
+                <rect x="3" y="2" width="18" height="20" rx="2" ry="2" /> 
+                <rect x="6" y="5" width="12" height="5" rx="1" stroke-width="1"/> 
+                <circle cx="8" cy="14" r="1.5" stroke-width=".5"/>
+                <circle cx="12" cy="14" r="1.5" stroke-width=".5"/>
+                <circle cx="16" cy="14" r="1.5" stroke-width=".5"/>
+                <circle cx="8" cy="17.5" r="1.5" stroke-width=".5"/>
+                <circle cx="12" cy="17.5" r="1.5" stroke-width=".5"/>
+                <circle cx="16" cy="17.5" r="1.5" stroke-width=".5"/>
+            </svg>
+            Estimates To Calculate
+        </h3>
+        <div id="validationErrors"></div>
+        <div id="estimatesContainer">
+            </div>
+        <button class="add-estimate-btn" onclick="addEstimate()">+ Add Estimate</button>
+    </div>
+    
+    <div class="form-section">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="section-icon">
+                <line x1="4" y1="21" x2="4" y2="14"></line>
+                <line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line>
+                <line x1="20" y1="12" x2="20" y2="3"></line>
+                <line x1="1" y1="14" x2="7" y2="14"></line>
+                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="17" y1="16" x2="23" y2="16"></line>
+            </svg>
+            Processing Options
+        </h3>
+
+        <div class="form-row checkbox-grid" id="processingOptionsRow1"> 
+            <div class="checkbox-item" id="includeMarginalsItem">
+                <input type="checkbox" id="includeMarginals" checked>
+                <label for="includeMarginals">
+                    Include Marginal Totals
+                    <span class="help-icon" title="Include marginal totals in your output"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-row checkbox-grid" id="processingOptionsRow2"> 
+            <div class="checkbox-item" id="addCustomDvsItem"> <input type="checkbox" id="addCustomDvs" checked> 
+                <label for="addCustomDvs"> Add Custom DVs
+                    <span class="help-icon" title="Include custom derived variables function. These are found in home/lfsinsights-config/custom_dvs.R"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-row checkbox-grid" id="processingOptionsRow3"> 
+            <div class="checkbox-item" id="addSuppressionItem">
+                <input type="checkbox" id="addSuppression">
+                <label for="addSuppression">
+                    Add Suppression Flags
+                    <span class="help-icon" title="Apply suppression flags for confidential data"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-row" id="weightRoundingRow">
+            <div class="form-label-column">
+                 <label for="weightRounding">
+                    Weight Rounding
+                    <span class="help-icon" title="Rounding factor which divides weighted estimate levels. Normally 100 or 1."></span>
+                </label>
+            </div>
+            <div class="form-input-column">
+                <input type="number" id="weightRounding" value="100" min="1" style="width: 100px;"> 
+            </div>
+        </div>
+
+        <div class="form-row" id="addLabelsRow">
+            <div class="form-label-column">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="addLabels" onchange="toggleLanguage()" checked>
+                    <label for="addLabels">
+                        Add Labels
+                        <span class="help-icon" title="Apply labels if a match is found in the metadata. "></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-input-column" id="languageGroup"> 
+                <select id="language" style="width: 100px;"> 
+                    <option value="EN">English</option>
+                    <option value="FR">French</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section" id="comparisonsSection">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v-3"/><path d="M14 15v-3"/><path d="M18 15v-3"/><path d="M2 8V4"/><path d="M22 6H2"/><path d="M22 8V4"/><path d="M6 15v-3"/><rect x="2" y="12" width="20" height="8" rx="2"/></svg>
+            Compare Results
+        </h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="comparisonType">Comparison Type</label>
+                <select id="comparisonType" onchange="toggleComparisonUI()">
+                    <option value="none">None</option>
+                    <option value="time">Calculate change over time</option>
+                    <option value="group">Calculate difference between groups</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="comparison-fields" id="timeComparisonFields">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="timeLag">Lag Period <span class="help-icon" title="Calculate period-over-period changes (e.g. Month over Month)"></span></label>
+                    <input type="number" id="timeLag" value="1" min="1">
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-fields" id="groupComparisonFields">
+             <div class="form-row">
+                <div class="form-group">
+                    <label class="required-label" for="compVariable">Comparison Variable <span class="help-icon" title="Name of the variable to compare (e.g., 'GENDER')"></span></label>
+                    <input type="text" id="compVariable" placeholder="e.g. GENDER" oninput="clearComparisonValidationError()">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required-label" for="compCat1">Category 1 <span class="help-icon" title="First category value (e.g., '1')"></span></label>
+                    <input type="text" id="compCat1" placeholder="e.g. 1" oninput="clearComparisonValidationError()">
+                </div>
+                <div class="form-group">
+                    <label class="required-label" for="compCat2">Category 2 <span class="help-icon" title="Second category value (e.g., '2')"></span></label>
+                    <input type="text" id="compCat2" placeholder="e.g. 2" oninput="clearComparisonValidationError()">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="generate-btn-container">
+        <button class="btn btn-primary" onclick="generateCode()">Generate Code</button>
+    </div>
+    
+    <div class="code-section">
+        <div class="code-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="section-icon"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                Generated R Code
+            </h3>
+            <button class="btn btn-secondary" onclick="copyCode()">Copy</button>
+        </div>
+        <div class="code-output" id="codeOutput"># Click "Generate Code" to see your lfs_table() configuration here</div>
+    </div>
+    
+<script>
+let estimateCounter = 0;
+let estimates = []; 
+
+function setDateInputLimits() {
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1; 
+    const currentMonthPadded = currentMonth.toString().padStart(2, '0');
+    const maxDate = `${currentYear}-${currentMonthPadded}`;
+    const minDate = "1976-01";
+
+    let endYear = currentYear;
+    let endMonth = currentMonth - 1;
+    if (endMonth < 1) {
+        endYear -= 1;
+        endMonth = 12;
+    }
+    const endMonthPadded = endMonth.toString().padStart(2, '0');
+    const defaultEndDate = `${endYear}-${endMonthPadded}`;
+
+    let startYear = currentYear;
+    let startMonth = currentMonth - 2;
+    if (startMonth < 1) {
+        startYear -= 1;
+        startMonth = startMonth + 12;
+    }
+    const startMonthPadded = startMonth.toString().padStart(2, '0');
+    const defaultStartDate = `${startYear}-${startMonthPadded}`;
+
+    if (startDateInput) {
+        startDateInput.min = minDate;
+        startDateInput.max = maxDate;
+        if (defaultStartDate < minDate) {
+            startDateInput.value = minDate;
+        } else {
+            startDateInput.value = defaultStartDate;
+        }
+        setTimeout(() => { startDateInput.style.color = '#495057'; }, 0);
+    }
+    
+    if (endDateInput) {
+        endDateInput.min = minDate;
+        endDateInput.max = maxDate;
+        endDateInput.value = defaultEndDate;
+        setTimeout(() => { endDateInput.style.color = '#495057'; }, 0);
+    }
+
+    if (startDateInput && endDateInput && startDateInput.value > endDateInput.value) {
+        startDateInput.value = endDateInput.value;
+    }
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', () => {
+            if (startDateInput.value > endDateInput.value && endDateInput.value) { 
+                endDateInput.value = startDateInput.value;
+            }
+            endDateInput.min = startDateInput.value; 
+        });
+        endDateInput.addEventListener('change', () => {
+            if (endDateInput.value < startDateInput.value && startDateInput.value) { 
+                startDateInput.value = endDateInput.value;
+            }
+            startDateInput.max = endDateInput.value; 
+        });
+        if(startDateInput.value) endDateInput.min = startDateInput.value;
+        if(endDateInput.value) startDateInput.max = endDateInput.value;
+    }
+}
+
+function adjustMonth(inputId, delta) {
+    const inputElement = document.getElementById(inputId);
+    if (!inputElement || !inputElement.value) return;
+    let [year, month] = inputElement.value.split('-').map(Number);
+    month += delta;
+    if (month > 12) { year += 1; month = 1; } else if (month < 1) { year -= 1; month = 12; }
+    const newMonthPadded = month.toString().padStart(2, '0');
+    let newDateString = `${year}-${newMonthPadded}`;
+    if (inputElement.min && newDateString < inputElement.min) newDateString = inputElement.min;
+    if (inputElement.max && newDateString > inputElement.max) newDateString = inputElement.max;
+    inputElement.value = newDateString;
+    inputElement.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+function toggleCollapsible(id) {
+    const content = document.getElementById(id);
+    const arrow = document.getElementById(id + 'Arrow');
+    if (content && arrow) {
+        if (content.classList.contains('show')) {
+            content.classList.remove('show');
+            arrow.classList.remove('down');
+        } else {
+            content.classList.add('show');
+            arrow.classList.add('down');
+        }
+    }
+}
+
+function updateWeightVar() {
+    const select = document.getElementById('weightVarSelect');
+    const customInput = document.getElementById('weightVarCustom');
+    if (select && customInput) {
+        if (select.value === 'custom') {
+            select.style.display = 'none';
+            customInput.style.display = 'block';
+            customInput.focus();
+        } else {
+            customInput.style.display = 'none';
+            select.style.display = 'block';
+        }
+    }
+}
+
+function toggleComparisonUI() {
+    const compType = document.getElementById('comparisonType').value;
+    const timeFields = document.getElementById('timeComparisonFields');
+    const groupFields = document.getElementById('groupComparisonFields');
+
+    timeFields.style.display = 'none';
+    groupFields.style.display = 'none';
+
+    if (compType === 'time') {
+        timeFields.style.display = 'block';
+    } else if (compType === 'group') {
+        groupFields.style.display = 'block';
+    }
+    
+    // Clear errors when toggling
+    clearComparisonValidationError();
+}
+
+function clearComparisonValidationError() {
+    const compVar = document.getElementById('compVariable');
+    const compCat1 = document.getElementById('compCat1');
+    const compCat2 = document.getElementById('compCat2');
+    
+    if(compVar) compVar.classList.remove('required-field');
+    if(compCat1) compCat1.classList.remove('required-field');
+    if(compCat2) compCat2.classList.remove('required-field');
+}
+
+function validateComparisonFields() {
+    const compType = document.getElementById('comparisonType').value;
+    if (compType !== 'group') return true;
+
+    const compVar = document.getElementById('compVariable');
+    const compCat1 = document.getElementById('compCat1');
+    const compCat2 = document.getElementById('compCat2');
+    const errorContainer = document.getElementById('validationErrors');
+    
+    let errors = [];
+    let allValid = true;
+
+    if (!compVar.value.trim()) {
+        compVar.classList.add('required-field');
+        errors.push("Comparison Variable is required.");
+        allValid = false;
+    }
+    if (!compCat1.value.trim()) {
+        compCat1.classList.add('required-field');
+        errors.push("Category 1 is required.");
+        allValid = false;
+    }
+    if (!compCat2.value.trim()) {
+        compCat2.classList.add('required-field');
+        errors.push("Category 2 is required.");
+        allValid = false;
+    }
+
+    if (!allValid) {
+        // We reuse the estimate validation error container, or create a simple alert if not visible
+        if (errorContainer) {
+             errorContainer.innerHTML = `<div class="validation-error"><strong>Please fix comparison errors:</strong><br>${errors.map(error => `• ${error}`).join('<br>')}</div>`;
+             // Scroll to error
+             errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            alert("Please fill in all required comparison fields.");
+        }
+    }
+    return allValid;
+}
+
+
+function toggleLanguage() {
+    const addLabelsCheckbox = document.getElementById('addLabels');
+    const languageSelect = document.getElementById('language');
+    const languageGroup = document.getElementById('languageGroup'); 
+    if (addLabelsCheckbox && languageSelect && languageGroup) {
+        if (addLabelsCheckbox.checked) {
+            languageSelect.disabled = false;
+            languageGroup.classList.remove('form-group-disabled');
+        } else {
+            languageSelect.disabled = true;
+            languageGroup.classList.add('form-group-disabled');
+        }
+    }
+}
+
+function toggleMicrodataUI(isMicrodataMode) {
+    const addEstimateButton = document.querySelector('.add-estimate-btn');
+    const analysisVarsGroup = document.getElementById('analysisVarsGroup');
+    const movingAvgRow = document.getElementById('movingAvgRow'); 
+    const includeMarginalsItem = document.getElementById('includeMarginalsItem');
+    const addSuppressionItem = document.getElementById('addSuppressionItem');
+    const weightRoundingRow = document.getElementById('weightRoundingRow');
+    const comparisonsSection = document.getElementById('comparisonsSection');
+
+    const est1FilterGroup = document.getElementById('filter-group-1');
+    const est1RatioFields = document.getElementById('ratio-fields-1');
+    const est1DistFields = document.getElementById('distribution-fields-1');
+
+    const elementsToToggle = [
+        analysisVarsGroup, movingAvgRow, includeMarginalsItem, 
+        addSuppressionItem, weightRoundingRow, comparisonsSection
+    ];
+
+    if (isMicrodataMode) {
+        if (addEstimateButton) addEstimateButton.disabled = true;
+        elementsToToggle.forEach(el => el && el.classList.add('control-disabled'));
+        if (est1FilterGroup) est1FilterGroup.style.display = 'none';
+        if (est1RatioFields) est1RatioFields.style.display = 'none';
+        if (est1DistFields) est1DistFields.style.display = 'none';
+    } else { 
+        if (addEstimateButton) addEstimateButton.disabled = false;
+        elementsToToggle.forEach(el => el && el.classList.remove('control-disabled'));
+        if (est1FilterGroup) est1FilterGroup.style.display = ''; 
+        
+        toggleComparisonUI();
+        toggleLanguage();
+    }
+}
+
+function handleEstimate1TypeChange() {
+    const typeSelectEst1 = document.getElementById('type-1');
+    if (!typeSelectEst1) return;
+    const isMicrodata = typeSelectEst1.value === 'microdata';
+    toggleMicrodataUI(isMicrodata);
+    if (!isMicrodata) { toggleRatioFields(1); }
+}
+
+function estimateTypeChanged(id) {
+    if (id === 1) { handleEstimate1TypeChange(); } else { toggleRatioFields(id); }
+}
+
+function renumberEstimates() {
+    const container = document.getElementById('estimatesContainer');
+    if (!container) return;
+    const allEstimates = container.querySelectorAll('.estimate-card');
+    allEstimates.forEach((card, index) => {
+        const newNumber = index + 1;
+        const oldId = card.id.split('-')[1];
+        card.id = `estimate-${newNumber}`;
+        const titleElement = card.querySelector('.estimate-title');
+        if (titleElement) titleElement.textContent = `Estimate ${newNumber}`;
+        
+        const elementsToUpdate = [
+            { selector: `#type-${oldId}`, newId: `type-${newNumber}`, attr: 'onchange', newValue: `estimateTypeChanged(${newNumber})` },
+            { selector: `#name-${oldId}`, newId: `name-${newNumber}` },
+            { selector: `#filter-group-${oldId}`, newId: `filter-group-${newNumber}` },
+            { selector: `#filter-${oldId}`, newId: `filter-${newNumber}` },
+            { selector: `#ratio-fields-${oldId}`, newId: `ratio-fields-${newNumber}` },
+            { selector: `#numerator-${oldId}`, newId: `numerator-${newNumber}`, attr: 'oninput', newValue: `clearValidationError(${newNumber})` },
+            { selector: `#denominator-${oldId}`, newId: `denominator-${newNumber}`, attr: 'oninput', newValue: `clearValidationError(${newNumber})` },
+            { selector: `#ratioType-${oldId}`, newId: `ratioType-${newNumber}` },
+            { selector: `#decimals-${oldId}`, newId: `decimals-${newNumber}` },
+            { selector: `#distribution-fields-${oldId}`, newId: `distribution-fields-${newNumber}` },
+            { selector: `#distVar-${oldId}`, newId: `distVar-${newNumber}`, attr: 'oninput', newValue: `clearValidationError(${newNumber})` },
+            { selector: `#distType-${oldId}`, newId: `distType-${newNumber}` },
+            { selector: `#distDecimals-${oldId}`, newId: `distDecimals-${newNumber}` }
+        ];
+        elementsToUpdate.forEach(({ selector, newId, attr, newValue }) => {
+            const element = card.querySelector(selector);
+            if (element) {
+                element.id = newId;
+                if (attr && newValue) element.setAttribute(attr, newValue);
+            }
+        });
+        const removeBtn = card.querySelector('.remove-btn');
+        if (removeBtn && newNumber > 1) {
+            removeBtn.setAttribute('onclick', `removeEstimate(${newNumber})`);
+        } else if (removeBtn && newNumber === 1) {
+            removeBtn.remove();
+        }
+    });
+    estimateCounter = allEstimates.length;
+}
+
+function addEstimate() {
+    estimateCounter++;
+    const container = document.getElementById('estimatesContainer');
+    if (!container) return;
+    let typeOptions = '<option value="sum">Sum</option><option value="ratio">Ratio</option><option value="ratio_distribution">Distribution</option>';
+    if (estimateCounter === 1) typeOptions += '<option value="microdata">Microdata only</option>';
+
+    const estimateHtml = `
+    <div class="estimate-card" id="estimate-${estimateCounter}">
+        <div class="estimate-header">
+            <div class="estimate-title">Estimate ${estimateCounter}</div>
+            ${estimateCounter > 1 ? `<button class="remove-btn" onclick="removeEstimate(${estimateCounter})" aria-label="Remove estimate ${estimateCounter}"><svg class="trash-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6zm2 3h14l-1 14H6L5 9zm4-6h6v2H9V3z"/></svg></button>` : ''}
+        </div>
+        <div class="estimate-content">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Type of estimate</label>
+                    <select id="type-${estimateCounter}" onchange="estimateTypeChanged(${estimateCounter})">${typeOptions}</select>
+                </div>
+                <div class="form-group">
+                    <label>Name of estimate (optional)<span class="help-icon" title="If no name provided, will auto name them est1, est2, etc."></span></label>
+                    <input type="text" id="name-${estimateCounter}" placeholder="e.g., Employment">
+                </div>
+            </div>
+            <div class="form-group" id="filter-group-${estimateCounter}">
+                <label>Estimate Filter (optional, and note: global filter will always apply)<span class="help-icon" title="This will apply a specific filter only to this estimate. The global filter still applies to the overall data being read-in."></span></label>
+                <input type="text" id="filter-${estimateCounter}" placeholder="e.g., EMPLOYED == 1">
+            </div>
+            <div class="ratio-fields" id="ratio-fields-${estimateCounter}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required-label">Numerator<span class="help-icon" title="The variable to be divided. Must be a binary (1 or 0) variable"></span></label>
+                        <input type="text" id="numerator-${estimateCounter}" placeholder="e.g., UNEMPLOYED" oninput="clearValidationError(${estimateCounter})">
+                    </div>
+                    <div class="form-group">
+                        <label class="required-label">Denominator<span class="help-icon" title="The variable to divide by. Must be a binary (1 or 0) variable"></span></label>
+                        <input type="text" id="denominator-${estimateCounter}" placeholder="e.g., LABOURFORCE" oninput="clearValidationError(${estimateCounter})">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ratio Type<span class="help-icon" title="Choose 'Percent' for rates like unemployment rate, so the final estimate will be multipled by 100. Choose 'Average' for things like wages"></span></label>
+                        <select id="ratioType-${estimateCounter}"><option value="percent">Percent</option><option value="average">Average</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Decimals<span class="help-icon" title="Number of decimal places to round the final ratio to (not to be confused with the weight_rounding which is set globally)"></span></label>
+                        <input type="number" id="decimals-${estimateCounter}" value="1" min="0">
+                    </div>
+                </div>
+            </div>
+            <div class="ratio-fields" id="distribution-fields-${estimateCounter}" style="display:none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required-label">Variable to Distribute<span class="help-icon" title="Enter a SINGLE categorical variable name (e.g. enter 'LFSSTAT' or 'AGE_GROUP'). To distribute by multiple variables, add a separate estimate for each."></span></label>
+                        <input type="text" id="distVar-${estimateCounter}" placeholder="e.g., LFSSTAT" oninput="clearValidationError(${estimateCounter})">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Format</label>
+                        <select id="distType-${estimateCounter}"><option value="percent">Percent</option><option value="proportion">Proportion</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Decimals</label>
+                        <input type="number" id="distDecimals-${estimateCounter}" value="1" min="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    container.insertAdjacentHTML('beforeend', estimateHtml);
+    if (estimateCounter === 1) { handleEstimate1TypeChange(); } else { toggleRatioFields(estimateCounter); }
+}
+
+function removeEstimate(id) {
+    const element = document.getElementById(`estimate-${id}`);
+    if (element) { element.remove(); renumberEstimates(); }
+}
+
+function toggleRatioFields(id) {
+    const typeSelect = document.getElementById(`type-${id}`);
+    const ratioFields = document.getElementById(`ratio-fields-${id}`);
+    const distFields = document.getElementById(`distribution-fields-${id}`); 
+    const filterGroup = document.getElementById(`filter-group-${id}`);
+    if (typeSelect && typeSelect.value === 'microdata' && id === 1) {
+        if (ratioFields) ratioFields.style.display = 'none';
+        if (distFields) distFields.style.display = 'none'; 
+        if (filterGroup) filterGroup.style.display = 'none';
+        return;
+    }
+    if (filterGroup) filterGroup.style.display = '';
+    if (typeSelect) {
+        if (ratioFields) ratioFields.style.display = 'none';
+        if (distFields) distFields.style.display = 'none';
+        if (typeSelect.value === 'ratio') { if (ratioFields) ratioFields.style.display = 'block'; }
+        else if (typeSelect.value === 'ratio_distribution') { if (distFields) distFields.style.display = 'block'; }
+    }
+    clearValidationError(id); 
+}
+
+function clearValidationError(estimateId) {
+    const numeratorInput = document.getElementById(`numerator-${estimateId}`);
+    const denominatorInput = document.getElementById(`denominator-${estimateId}`);
+    const distVarInput = document.getElementById(`distVar-${estimateId}`);
+    if (numeratorInput) numeratorInput.classList.remove('required-field');
+    if (denominatorInput) denominatorInput.classList.remove('required-field');
+    if (distVarInput) distVarInput.classList.remove('required-field');
+}
+
+function validateRatioFields() {
+    const errorContainer = document.getElementById('validationErrors');
+    if (!errorContainer) return true;
+    let errors = [];
+    let allValid = true;
+    for (let i = 1; i <= estimateCounter; i++) {
+        const estimateElement = document.getElementById(`estimate-${i}`);
+        if (!estimateElement) continue; 
+        const typeSelect = document.getElementById(`type-${i}`);
+        if (i === 1 && document.getElementById('type-1').value === 'microdata') continue;
+        if (typeSelect) {
+            if (typeSelect.value === 'ratio') {
+                const numeratorInput = document.getElementById(`numerator-${i}`);
+                const denominatorInput = document.getElementById(`denominator-${i}`);
+                if (numeratorInput && !numeratorInput.value.trim()) {
+                    numeratorInput.classList.add('required-field'); errors.push(`Estimate ${i}: Numerator is required for ratio calculations.`); allValid = false;
+                } else if (numeratorInput) { numeratorInput.classList.remove('required-field'); }
+                if (denominatorInput && !denominatorInput.value.trim()) {
+                    denominatorInput.classList.add('required-field'); errors.push(`Estimate ${i}: Denominator is required for ratio calculations.`); allValid = false;
+                } else if (denominatorInput) { denominatorInput.classList.remove('required-field'); }
+            } else if (typeSelect.value === 'ratio_distribution') { 
+                const distVarInput = document.getElementById(`distVar-${i}`);
+                if (distVarInput && !distVarInput.value.trim()) {
+                    distVarInput.classList.add('required-field'); errors.push(`Estimate ${i}: Variable to Distribute is required.`); allValid = false;
+                } else if (distVarInput) { distVarInput.classList.remove('required-field'); }
+            }
+        }
+    }
+    if (errors.length > 0) {
+        errorContainer.innerHTML = `<div class="validation-error"><strong>Please fix the following errors:</strong><br>${errors.map(error => `• ${error}`).join('<br>')}</div>`;
+    } else { errorContainer.innerHTML = ''; }
+    return allValid;
+}
+
+function generateCode() {
+    try {
+        const est1TypeSelect = document.getElementById('type-1');
+        const isMicrodataMode = est1TypeSelect && est1TypeSelect.value === 'microdata';
+        
+        // Validate both Estimate fields AND Comparison fields
+        const validEstimates = isMicrodataMode ? true : validateRatioFields();
+        const validComparisons = validateComparisonFields();
+
+        if (!validEstimates || !validComparisons) { return; }
+        
+        const weightVarSelect = document.getElementById('weightVarSelect');
+        const weightVarCustom = document.getElementById('weightVarCustom');
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+        if (!weightVarSelect || !startDate || !endDate) { throw new Error('Core configuration elements (weight, start/end date) not found.'); }
+        
+        const weightVar = weightVarSelect.value === 'custom' ? (weightVarCustom ? weightVarCustom.value.trim() : 'FINALWT') : weightVarSelect.value;
+        const startDateValue = startDate.value + '-01';
+        const endDateValue = endDate.value + '-01';
+        
+        let code = "";
+        const libraryCall = "# LFS insights\nlibrary(lfsinsights)\n\n";
+
+        if (isMicrodataMode) {
+            code = libraryCall + `df_microdata <- lfs_microdata(
+    # Date configuration
+    start_date = "${startDateValue}",
+    end_date = "${endDateValue}",`;
+
+            const filterMonthsEl = document.getElementById('filterMonths');
+            if (filterMonthsEl && filterMonthsEl.value.trim()) code += `\n    filter_months = "${filterMonthsEl.value.trim()}",`;
+            const filterYearsEl = document.getElementById('filterYears');
+            if (filterYearsEl && filterYearsEl.value.trim()) code += `\n    filter_years = "${filterYearsEl.value.trim()}",`;
+
+            // --- Data Sources ---
+            const dataSourcesMicro = [];
+            if (document.getElementById('prerelease').checked) dataSourcesMicro.push('prerelease = TRUE');
+            if (document.getElementById('bootstraps').checked) dataSourcesMicro.push('bootstraps = TRUE');
+            if (document.getElementById('tabsPlus').checked) dataSourcesMicro.push('tabs_plus = TRUE');
+            if (document.getElementById('north').checked) dataSourcesMicro.push('north = TRUE');
+            
+            // LMI / Supplements
+            if (document.getElementById('lmi').checked) dataSourcesMicro.push('supplement_lmi = TRUE');
+            if (document.getElementById('lmsi').checked) dataSourcesMicro.push('supplement_lmsi = TRUE');
+            if (document.getElementById('dlmi').checked) dataSourcesMicro.push('supplement_dlmi = TRUE');
+            
+            if (dataSourcesMicro.length > 0) { code += `\n    \n    # Data sources\n    ${dataSourcesMicro.join(',\n    ')},`; }
+
+            // --- Analysis Parameters ---
+            code += `\n    \n    # Analysis parameters`;
+            const filterConditionEl = document.getElementById('filterCondition');
+            if (filterConditionEl && filterConditionEl.value.trim()) code += `\n    filter_condition = "${filterConditionEl.value.trim()}",`;
+            if (document.getElementById('bootstraps').checked) code += `\n    weight_var = "${weightVar}",`;
+
+            // --- Processing Options ---
+            code += `\n    \n    # Processing options`;
+            const addCustomDvsEl = document.getElementById('addCustomDvs'); 
+            code += `\n    add_custom_dvs = ${addCustomDvsEl && addCustomDvsEl.checked ? 'TRUE' : 'FALSE'},`;
+            const addLabelsEl = document.getElementById('addLabels');
+            const langEl = document.getElementById('language');
+            code += `\n    add_labels = ${addLabelsEl && addLabelsEl.checked ? 'TRUE' : 'FALSE'}`; 
+            if (addLabelsEl && addLabelsEl.checked) code += `, \n    language = "${langEl ? langEl.value : 'EN'}"`;
+            
+            if (code.endsWith(',')) code = code.slice(0, -1);
+            code += '\n)';
+
+        } else { 
+            code = libraryCall + `df_result <- lfs_table(
+    # Date configuration
+    start_date = "${startDateValue}",
+    end_date = "${endDateValue}",`;
+        
+            const movingAvg = document.getElementById('movingAvg'); 
+            const filterMonths = document.getElementById('filterMonths');
+            const filterYears = document.getElementById('filterYears');
+            if (movingAvg && movingAvg.value && movingAvg.value !== '1') code += `\n    moving_avg = ${movingAvg.value},`;
+            if (filterMonths && filterMonths.value.trim()) code += `\n    filter_months = "${filterMonths.value.trim()}",`;
+            if (filterYears && filterYears.value.trim()) code += `\n    filter_years = "${filterYears.value.trim()}",`;
+            
+            const dataSources = [];
+            const prereleaseEl = document.getElementById('prerelease');
+            const bootstrapsEl = document.getElementById('bootstraps');
+            const tabsPlusEl = document.getElementById('tabsPlus');
+            const northEl = document.getElementById('north');
+            const lmiEl = document.getElementById('lmi');
+            const lmsiEl = document.getElementById('lmsi');
+            const dlmiEl = document.getElementById('dlmi');
+            
+            if (prereleaseEl && prereleaseEl.checked) dataSources.push('prerelease = TRUE');
+            if (bootstrapsEl && bootstrapsEl.checked) dataSources.push('bootstraps = TRUE');
+            if (tabsPlusEl && tabsPlusEl.checked) dataSources.push('tabs_plus = TRUE');
+            if (northEl && northEl.checked) dataSources.push('north = TRUE');
+            
+            if (lmiEl && lmiEl.checked) dataSources.push('supplement_lmi = TRUE');
+            if (lmsiEl && lmsiEl.checked) dataSources.push('supplement_lmsi = TRUE');
+            if (dlmiEl && dlmiEl.checked) dataSources.push('supplement_dlmi = TRUE');
+            
+            if (dataSources.length > 0) {
+                code += '\n    \n    # Data sources\n    ' + dataSources.join(',\n    ') + ',';
+            }
+
+            const filterCondition = document.getElementById('filterCondition');
+            const analysisVars = document.getElementById('analysisVars'); 
+            
+            code += `\n    \n    # Analysis parameters    
+    filter_condition = "${filterCondition ? filterCondition.value.trim() : 'AGE >= 15 & !is.na(LFSSTAT)'}",
+    analysis_vars = "${analysisVars ? analysisVars.value.trim() : 'PROV'}",
+    weight_var = "${weightVar}",`;
+            
+            if (estimateCounter === 1) {
+                const nameEl = document.getElementById(`name-1`);
+                const typeEl = document.getElementById(`type-1`);
+                const filterEl = document.getElementById(`filter-1`);
+                const name = nameEl ? nameEl.value.trim() : '';
+                const type = typeEl ? typeEl.value : 'sum';
+                const estFilter = filterEl ? filterEl.value.trim() : '';
+
+                if (type === 'sum' && !name && !estFilter) {
+                    code += `\n    \n    # Estimates configuration\n    estimates = list(\n        est_type = "sum"\n    ),`;
+                } else {
+                    let estimateParts = [];
+                    if (name) estimateParts.push(`est_name = "${name}"`);
+                    estimateParts.push(`est_type = "${type}"`);
+                    if (type === 'ratio') { 
+                        const numeratorEl = document.getElementById(`numerator-1`);
+                        const denominatorEl = document.getElementById(`denominator-1`);
+                        const ratioTypeEl = document.getElementById(`ratioType-1`);
+                        const decimalsEl = document.getElementById(`decimals-1`);
+                        if (numeratorEl && numeratorEl.value.trim()) estimateParts.push(`ratio_numerator = "${numeratorEl.value.trim()}"`);
+                        if (denominatorEl && denominatorEl.value.trim()) estimateParts.push(`ratio_denominator = "${denominatorEl.value.trim()}"`);
+                        if (ratioTypeEl) estimateParts.push(`ratio_type = "${ratioTypeEl.value}"`);
+                        if (decimalsEl) estimateParts.push(`ratio_decimals = ${decimalsEl.value}`);
+                    } else if (type === 'ratio_distribution') { 
+                        const distVarEl = document.getElementById(`distVar-1`);
+                        const distTypeEl = document.getElementById(`distType-1`);
+                        const distDecEl = document.getElementById(`distDecimals-1`);
+                        if (distVarEl && distVarEl.value.trim()) estimateParts.push(`var_name = "${distVarEl.value.trim()}"`);
+                        if (distTypeEl) estimateParts.push(`ratio_type = "${distTypeEl.value}"`);
+                        if (distDecEl) estimateParts.push(`ratio_decimals = ${distDecEl.value}`);
+                    }
+                    if (estFilter) estimateParts.push(`est_filter = "${estFilter}"`);
+                    code += `\n    \n    # Estimates configuration\n    estimates = list(\n        list(\n            ${estimateParts.join(',\n            ')}\n        )\n    ),`;
+                }
+            } else { 
+                code += '\n    \n    # Estimates configuration\n    estimates = list(';
+                const estimates = [];
+                for (let i = 1; i <= estimateCounter; i++) {
+                    const estimateElement = document.getElementById(`estimate-${i}`);
+                    if (!estimateElement) continue; 
+                    
+                    const nameEl = document.getElementById(`name-${i}`);
+                    const typeEl = document.getElementById(`type-${i}`);
+                    const filterEl = document.getElementById(`filter-${i}`);
+                    const name = nameEl ? nameEl.value.trim() : '';
+                    const type = typeEl ? typeEl.value : 'sum';
+                    const estFilter = filterEl ? filterEl.value.trim() : ''; 
+                    let estimateParts = [];
+                    if (name) estimateParts.push(`est_name = "${name}"`);
+                    estimateParts.push(`est_type = "${type}"`);
+                    if (type === 'ratio') { 
+                        const numeratorEl = document.getElementById(`numerator-${i}`);
+                        const denominatorEl = document.getElementById(`denominator-${i}`);
+                        const ratioTypeEl = document.getElementById(`ratioType-${i}`);
+                        const decimalsEl = document.getElementById(`decimals-${i}`);
+                        if (numeratorEl && numeratorEl.value.trim()) estimateParts.push(`ratio_numerator = "${numeratorEl.value.trim()}"`);
+                        if (denominatorEl && denominatorEl.value.trim()) estimateParts.push(`ratio_denominator = "${denominatorEl.value.trim()}"`);
+                        if (ratioTypeEl) estimateParts.push(`ratio_type = "${ratioTypeEl.value}"`);
+                        if (decimalsEl) estimateParts.push(`ratio_decimals = ${decimalsEl.value}`);
+                    } else if (type === 'ratio_distribution') { 
+                        const distVarEl = document.getElementById(`distVar-${i}`);
+                        const distTypeEl = document.getElementById(`distType-${i}`);
+                        const distDecEl = document.getElementById(`distDecimals-${i}`);
+                        if (distVarEl && distVarEl.value.trim()) estimateParts.push(`var_name = "${distVarEl.value.trim()}"`);
+                        if (distTypeEl) estimateParts.push(`ratio_type = "${distTypeEl.value}"`);
+                        if (distDecEl) estimateParts.push(`ratio_decimals = ${distDecEl.value}`);
+                    }
+                    if (estFilter) estimateParts.push(`est_filter = "${estFilter}"`);
+                    estimates.push(`\n        list(\n            ${estimateParts.join(',\n            ')}\n        )`);
+                }
+                code += estimates.join(',') + '\n    ),';
+            }
+            
+            const addCustomDvsEl = document.getElementById('addCustomDvs');
+            const addLabelsEl = document.getElementById('addLabels');
+            const languageEl = document.getElementById('language');
+            const includeMarginalsEl = document.getElementById('includeMarginals'); 
+            const weightRoundingEl = document.getElementById('weightRounding'); 
+            const addSuppressionEl = document.getElementById('addSuppression'); 
+            
+            // --- UPDATED COMPARISON LOGIC ---
+            const compType = document.getElementById('comparisonType').value;
+            const timeLagEl = document.getElementById('timeLag'); 
+            
+            let processingOptions = [];
+            processingOptions.push(`add_custom_dvs = ${addCustomDvsEl && addCustomDvsEl.checked ? 'TRUE' : 'FALSE'}`);
+            processingOptions.push(`add_labels = ${addLabelsEl && addLabelsEl.checked ? 'TRUE' : 'FALSE'}`);
+
+            if (addLabelsEl && addLabelsEl.checked) { 
+                processingOptions.push(`language = "${languageEl ? languageEl.value : 'EN'}"`);
+            }
+
+            processingOptions.push(`include_marginals = ${includeMarginalsEl && includeMarginalsEl.checked ? 'TRUE' : 'FALSE'}`);
+            processingOptions.push(`weight_rounding = ${weightRoundingEl ? weightRoundingEl.value : '100'}`);
+            processingOptions.push(`add_suppression_flag = ${addSuppressionEl && addSuppressionEl.checked ? 'TRUE' : 'FALSE'}`);
+            
+            // --- Time Comparison Logic (CORRECTED) ---
+            if (compType === 'time') {
+                processingOptions.push(`\n    # Calculate change\n    calculate_change = TRUE`);
+                processingOptions.push(`lag_period = ${timeLagEl ? timeLagEl.value : '1'}`);
+            }
+
+            // --- Group Comparison Logic ---
+            if (compType === 'group') {
+                processingOptions.push(`\n    # Group Comparison\n    calculate_difference = TRUE`);
+                
+                const compVar = document.getElementById('compVariable');
+                const compCat1 = document.getElementById('compCat1');
+                const compCat2 = document.getElementById('compCat2');
+
+                if (compVar && compVar.value.trim()) {
+                    processingOptions.push(`comparison_variable = "${compVar.value.trim()}"`);
+                }
+                
+                // Combine the two category boxes into a single string "val1, val2"
+                if (compCat1 && compCat1.value.trim() && compCat2 && compCat2.value.trim()) {
+                    processingOptions.push(`comparison_categories = "${compCat1.value.trim()}, ${compCat2.value.trim()}"`);
+                }
+            }
+            
+            code += `\n    \n    # Processing options\n    ${processingOptions.join(',\n    ')}`;
+            
+            if (code.endsWith(',')) { code = code.slice(0, -1); }
+            code += '\n)';
+        }
+        
+        const codeOutput = document.getElementById('codeOutput');
+        if (codeOutput) { codeOutput.textContent = code; }
+    } catch (error) {
+        console.error('Error generating code:', error);
+        const codeOutput = document.getElementById('codeOutput');
+        if (codeOutput) { codeOutput.textContent = 'Error generating code: ' + error.message; }
+    }
+}
+
+function copyCode() {
+    const codeOutput = document.getElementById('codeOutput');
+    if (codeOutput) {
+        const codeToCopy = codeOutput.textContent;
+        const textArea = document.createElement("textarea");
+        textArea.value = codeToCopy;
+        textArea.style.position = "fixed"; 
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            const btn = event.target; 
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => { btn.textContent = originalText; }, 2000);
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Error Copying';
+             setTimeout(() => { btn.textContent = originalText; }, 2000);
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    setDateInputLimits(); 
+    addEstimate(); 
+    
+    // Initial states
+    toggleComparisonUI();
+    toggleLanguage();
+});
+</script>
+</body>
+</html>
