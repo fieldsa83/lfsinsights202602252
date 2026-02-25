@@ -166,7 +166,7 @@ graph TD
     
     subgraph Iterative Monthly Processing
         Loop{For Each Required Month} --> LoadRaw[Load Raw TABS Data]
-        LoadRaw --> Supplements[NORTH, SUPPLEMENTS, etc]
+        LoadRaw --> Supplements[Optional: load other data like NORTH, SUPPLEMENTS, etc]
         Supplements --> DVs[Load derived variables]
         DVs --> ApplyFilter[Apply global filter conditions]
         ApplyFilter --> Boot[Optional: Load BOOTSTRAPS]
