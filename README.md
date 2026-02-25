@@ -90,7 +90,9 @@ df_result <- lfs_table(
   # Other data source options
   bootstraps = FALSE,             # Include bootstrap weights
   tabs_plus = FALSE,              # Include TABS Plus data
-  supplement = FALSE,             # Include supplement data
+  supplement_lmi = FALSE,         # Include LMI (monthly) supplement data
+  supplement_lmsi = FALSE,        # Include LMSI (quarterly) supplement data
+  supplement_dlmi = FALSE,        # Include DLMI (annual disability) supplement data
   north = FALSE,                  # Include territories data
   
   # Processing options
