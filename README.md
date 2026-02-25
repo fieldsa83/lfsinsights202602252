@@ -165,9 +165,10 @@ graph TD
     Setup --> |Validate dates, determine months, load DVs| Loop
     
     subgraph Iterative Monthly Processing
-        Loop{For Each Required Month} --> LoadRaw[Load Raw Data]
-        LoadRaw --> |TABS, NORTH, SUPPLEMENTS| ApplyFilter[Apply Global Filters & Custom DVs]
-        ApplyFilter --> |BOOTSTRAPS| ModeCheck{Microdata Only Mode?}
+        Loop{For Each Required Month} --> LoadRaw[Load Raw Data (TABS, NORTH, SUPPLEMENTS)]
+        LoadRaw --> ApplyFilter[Apply Global Filters & Custom DVs]
+        ApplyFilter --> Boot[Optional: Load BOOTSTRAPS]
+        Boot --> ModeCheck{Microdata Only Mode?}
         ModeCheck -->|Yes| StoreRaw[Store Raw Microdata]
         ModeCheck -->|No| CalcSumm[Calculate Estimate Summaries]
     end
