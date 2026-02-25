@@ -40,7 +40,7 @@ df_result <- lfs_table(
   filter_condition = "AGE>=15 & LFSSTAT %in% c(1,2)",
   analysis_vars = "GENDER, NOC_5"
 )
-
+```
 
 
 ## Package Workflow
