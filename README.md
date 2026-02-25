@@ -45,6 +45,7 @@ df_result <- lfs_table(
 
 ## Package Workflow
 
+
 ```mermaid
 graph TD
     Start([LFS Insights Process Start<br>lfs_table / lfs_microdata]) --> Setup[Initialization & Setup]
@@ -61,11 +62,12 @@ graph TD
         ModeCheck -->|No| CalcSumm[Calculate Estimate Summaries]
     end
     
+    %% Splitting the paths clearly prevents overlaps
     StoreRaw --> FinalizeMicro[Combine All Raw Microdata]
-    CalcSumm --> PostProcLoop
+    CalcSumm --> PostProcLoop{FOR EACH DEFINED ESTIMATE:}
     
     subgraph Post-Processing & Finalization
-        PostProcLoop{FOR EACH DEFINED ESTIMATE:} --> Combine[Combine monthly summaries]
+        PostProcLoop --> Combine[Combine monthly summaries]
         Combine --> Complete[Complete Data Combinations<br>fill missing rows]
         Complete --> Marginals[Optional: Calculate Marginal Totals]
         Marginals --> MovingAvg[Optional: Calculate Moving Average]
@@ -78,8 +80,9 @@ graph TD
         Variance --> CombineAll[Combine All Processed Estimates]
     end
     
-    CombineAll --> Labels
-    FinalizeMicro --> Labels[Optional: Apply Labels]
+    %% Re-merging the paths at the end
+    CombineAll --> Labels[Optional: Apply Labels]
+    FinalizeMicro --> Labels
     
     Labels --> CleanUp[Final Result Clean-up]
     CleanUp --> FinalOut([Final LFS Data Output])
