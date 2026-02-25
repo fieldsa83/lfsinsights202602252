@@ -30,7 +30,7 @@ Or visit: https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/ind
 ```r
 library(lfsinsights)
 
-# Calculate basic summary table
+# Calculate basic summary table (ie cross-tabulation)
 df_result <- lfs_table(
   # Date configuration
   start_date = "2025-01-01",
