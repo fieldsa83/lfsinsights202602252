@@ -18,6 +18,7 @@
 #' @param prerelease Whether to use pre-release data (default: FALSE).
 #' @param bootstraps Whether to include bootstrap weights (default: FALSE).
 #' @param tabs_plus Whether to include TABS Plus data (default: FALSE).
+#' @param supplement Deprecated. Please use \code{supplement_lmi} instead.
 #' @param supplement_lmi Whether to include LMI (monthly) supplement data (default: FALSE).
 #' @param supplement_lmsi Whether to include LMSI (quarterly) supplement data (default: FALSE).
 #' @param supplement_dlmi Whether to include DLMI (annual disability) supplement data (default: FALSE).
