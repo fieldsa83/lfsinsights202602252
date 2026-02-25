@@ -155,93 +155,33 @@ df_result <- lfs_table(
 )
 ```
 
-## Structure
-```
-                             +-----------------------------+
-                             |  LFS Insights Process Start |
-                             | (lfs_table / lfs_microdata) |
-                             +--------------+--------------+
-                                            |
-                                            v
-                         +-----------------------------------+
-                         |         Initialization & Setup    |
-                         +-----------------------------------+
-                         | - Validate Dates & Configuration  |
-                         | - Determine Required Months       |
-                         | - Load Custom Derived Variables   |
-                         +------------------+----------------+
-                                            |
-                                            v
-              +-------------------------------------------------------------+
-              |              Monthly Data Processing (Iterative)            |
-              |-------------------------------------------------------------|
-              |                  FOR EACH REQUIRED MONTH:                   |
-              |                                                             |
-              |   +-----------------------------------------------------+   |
-              |   |                 Load Raw Data                       |   |
-              |   | - Load TABS Data                                    |   |
-              |   | - (Optional) Join TABS+, NORTH, SUPPLEMENT Data     |   |
-              |   | - (Optional) Apply Custom Derived Variables         |   |
-              |   | - Apply Global Filter Condition                     |   |
-              |   | - (Optional) Load & Join Bootstrap Weights          |   |
-              |   +--------------------------+--------------------------+   |
-              |                              |                              |
-              |                              v                              |
-              |                    {Microdata Only Mode}                   |
-              |                     (lfs_microdata call)                    |
-              |                              |                              |
-              |          +------------------+------------------+            |
-              |          |                  |                  |            |
-              |          v                  |                  v            |
-              |   [YES] Store Raw Microdata |      [NO] Calculate Summaries |
-              |      (for final output)     |     (for lfs_table estimates) |
-              |                             |                               |
-              +------------------------------+------------------------------+
-                                            |
-                                            v
-                        (Raw Microdata Collected) OR (Summaries Collected per Estimate)
-                                            |
-                                            v
-              +-------------------------------------------------------------+
-              |                 Post-Processing & Finalization              |
-              |-------------------------------------------------------------|
-              |                   IF IN SUMMARY TABLE MODE:                 |
-              |                                                             |
-              |   +-----------------------------------------------------+   |
-              |   |           FOR EACH DEFINED ESTIMATE:                |   |
-              |   | - Combine monthly summaries for this time period    |   |
-              |   | - Complete Data Combinations (fill missing rows)    |   |
-              |   | - (Optional) Calculate Marginal Totals              |   |
-              |   | - (Optional) Calculate Moving Average               |   |
-              |   | - (Optional) Add Suppression Flags                  |   |
-              |   | - Apply Rounding to Estimates                       |   |
-              |   | - IF "Ratio" Estimate: Calculate Ratios             |   |
-              |   | - IF "Calculate Change": Calculate Period Changes   |   |
-              |   | - IF "Bootstraps": Calculate Bootstrap Variance     |   |
-              |   | - (Optional) Apply Human-Readable Labels            |   |
-              |   +--------------------------+--------------------------+   |
-              |                              |                              |
-              |                              v                              |
-              |                   Combine All Processed Estimates           |
-              |  (from each loop iteration, into a single final table)      |
-              |                                                             |
-              |                   ELSE IF IN MICRODATA ONLY MODE:           |
-              |                                                             |
-              |   +-----------------------------------------------------+   |
-              |   | - Combine All Raw Microdata for All Months          |   |
-              |   | - (Optional) Apply Labels                           |   |
-              |   +--------------------------+--------------------------+   |
-              +-------------------------------------------------------------+
-                                            |
-                                            v
-                         +-----------------------------------+
-                         |       Final Result Clean-up       |
-                         | - Column Ordering & Renaming      |
-                         +------------------+----------------+
-                                            |
-                                            v
-                               +-----------------------------+
-                               |    Final LFS Data Output    |
-                               |   (Table or Microdata df)   |
-                               +-----------------------------+
+## Package Workflow
+
+```mermaid
+graph TD
+    Start([LFS Insights Process Start<br>lfs_table / lfs_microdata]) --> Setup[Initialization & Setup]
+    Setup --> |Validate dates, determine months, load DVs| Loop
+    
+    subgraph Iterative Monthly Processing
+        Loop{For Each Required Month} --> LoadRaw[Load Raw Data]
+        LoadRaw --> |TABS, NORTH, SUPPLEMENT| ApplyFilter[Apply Global Filters & Custom DVs]
+        ApplyFilter --> ModeCheck{Microdata Only Mode?}
+        ModeCheck -->|Yes| StoreRaw[Store Raw Microdata]
+        ModeCheck -->|No| CalcSumm[Calculate Estimate Summaries]
+    end
+    
+    StoreRaw --> FinalizeMicro[Combine All Raw Microdata]
+    CalcSumm --> PostProc
+    
+    subgraph Post-Processing & Finalization
+        PostProc[Combine Monthly Summaries] --> Complete[Complete Missing Combinations]
+        Complete --> MovingAvg[Calculate Moving Averages]
+        MovingAvg --> Ratios[Calculate Ratios & Period Changes]
+        Ratios --> Variance[Calculate Bootstrap Variance]
+        Variance --> Labels[Apply Human-Readable Labels]
+    end
+    
+    Labels --> CleanUp[Final Result Clean-up]
+    FinalizeMicro --> CleanUp
+    CleanUp --> FinalOut([Final LFS Data Output])
 ```
