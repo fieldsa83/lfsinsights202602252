@@ -2,17 +2,21 @@
 #'
 #' @param start_date Start date of the range (YYYY-MM-DD).
 #' @param end_date End date of the range (YYYY-MM-DD).
-#' @param estimates List of estimate configurations. This can be either:
-#'                 - A nested list of estimate configurations (for multiple estimates)
-#'                 - A single list with est_type (for a single estimate)
-#'                 - Omitted (defaults to a simple sum)
-#' @param analysis_vars Variables to analyze (comma-separated string or character vector).
-#'                     Default is "PROV".
-#' @param filter_condition Global filter condition applied during data loading (e.g., "AGE >= 15").
-#'                         This filter is applied before any estimate-specific filters.
+#' @param analysis_vars Variables to analyze (comma-separated string or character vector). Default is "PROV".
+#' @param filter_condition Global filter condition applied during data loading (e.g., "AGE >= 15"). This filter is applied before any estimate-specific filters.
 #' @param filter_months Optional months to filter (numeric vector or comma-separated string).
 #' @param filter_years Optional years to filter (character vector or comma-separated string).
 #' @param moving_avg Number of periods for moving average (default: 1).
+#' @param estimates List of estimate configurations. This can be either a nested list (for multiple estimates), a single list, or omitted (defaults to a simple sum). Each estimate sub-list can contain:
+#'   \itemize{
+#'     \item \code{est_name}: Character string for the output column name.
+#'     \item \code{est_type}: The type of calculation: "sum", "ratio", or "ratio_distribution".
+#'     \item \code{est_filter}: Optional filter applied specifically to this estimate.
+#'     \item \code{ratio_numerator} & \code{ratio_denominator}: Required for "ratio" types.
+#'     \item \code{var_name}: Required if \code{est_type = "ratio_distribution"}. The variable to calculate the distribution across.
+#'     \item \code{ratio_type}: "percent" or "average" (default is "percent").
+#'     \item \code{ratio_decimals}: Integer for rounding ratios (default is 1).
+#'   }
 #' @param add_custom_dvs Whether to add custom derived variables (default: TRUE).
 #' @param weight_var Weighting variable to use (default: "FINALWT").
 #' @param prerelease Whether to use pre-release data (default: FALSE).
@@ -25,6 +29,14 @@
 #' @param north Whether to include north data (default: FALSE).
 #' @param add_labels Whether to apply labels (default: FALSE).
 #' @param language Language for labels, "EN" or "FR" (default: "EN").
+#' @param weight_rounding Numeric factor for rounding estimate levels, including sum, numerator, and denominator (default: 100).
+#' @param include_marginals Logical. Whether to include marginal totals (default: TRUE).
+#' @param add_suppression_flag Logical. Whether to add basic suppression flags to the output (default: FALSE).
+#' @param calculate_change Logical. Whether to calculate period-over-period changes (default: FALSE).
+#' @param lag_period Integer. Number of periods to lag for the change calculation (default: 1).
+#' @param calculate_difference Logical. If TRUE, calculates the difference between two categories defined in \code{comparison_variable} (default: FALSE).
+#' @param comparison_variable Character. The name of the column containing the categories to compare (e.g., "GENDER"). Required if \code{calculate_difference = TRUE}.
+#' @param comparison_categories Character vector of length 2. The specific categories within the \code{comparison_variable} to calculate the difference between (e.g., \code{c("Male", "Female")}).
 #' @param ... Additional parameters passed to the processing functions.
 #'
 #' @return A data frame containing LFS tabular results for all estimates.
