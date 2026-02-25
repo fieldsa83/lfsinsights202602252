@@ -16,6 +16,7 @@ remotes::install_git("https://gitlab.k8s.cloud.statcan.ca/clmi-cimt/clmi-insight
 library(lfsinsights)
 ```
 
+
 ## 🚀 Live Application
 
 Click the link below to access and use the LFS Table Configurator:
@@ -23,6 +24,23 @@ Click the link below to access and use the LFS Table Configurator:
 **[Launch LFS Configurator](https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/index.html)**
 
 Or visit: https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/index.html
+
+## Basic usage
+
+```r
+library(lfsinsights)
+
+# Calculate basic summary table
+df_result <- lfs_table(
+  # Date configuration
+  start_date = "2025-01-01",
+  end_date = "2025-04-01",
+
+  # Analysis parameters    
+  filter_condition = "AGE>=15 & LFSSTAT %in% c(1,2)",
+  analysis_vars = "GENDER, NOC_5"
+)
+
 
 
 ## Package Workflow
@@ -66,7 +84,7 @@ graph TD
     Labels --> CleanUp[Final Result Clean-up]
     CleanUp --> FinalOut([Final LFS Data Output])
 ```
-## Basic usage
+## Complete parameters of lfs_table
 
 ```r
 library(lfsinsights)
