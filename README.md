@@ -24,7 +24,7 @@ library(lfsinsights)
 
 Configure your table visually and copy the generated R code into your script — no syntax required.
 
-🚀 **[Launch Configurator →](https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/index.html)**
+🚀 **[Launch Configurator](https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/index.html)**
 
 
 ## Basic usage for a summary table
