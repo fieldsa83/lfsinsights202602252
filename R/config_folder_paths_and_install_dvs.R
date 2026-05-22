@@ -199,8 +199,8 @@ create_custom_dvs_file <- function() {
     # Default content for the custom_dvs.R file
     custom_dvs_content <- '# Custom Derived Variables - function returns a data frame with custom DVs added.
 
-# Load tidyverse quietly prior to run
-suppressWarnings(suppressPackageStartupMessages(library(tidyverse)))
+# Load dplyr quietly prior to run
+suppressWarnings(suppressPackageStartupMessages(library(dplyr)))
 
 ### Enter your custom derived variables within the function below ###
 custom_dvs <- function(data) {
@@ -252,12 +252,7 @@ custom_dvs <- function(data) {
       NOC1 = substr(NOC_5, 1, 1),
       NOC2 = substr(NOC_5, 1, 2),
       NOC3 = substr(NOC_5, 1, 3),
-      NOC4 = substr(NOC_5, 1, 4),
-
-      # Add decimals to HRLYEARN and others
-      HRLYEARN = HRLYEARN/100,
-      WKLYEARN = WKLYEARN/100,
-      AHRSMAIN = AHRSMAIN/10
+      NOC4 = substr(NOC_5, 1, 4)
     )
 }'
 
@@ -289,22 +284,12 @@ load_custom_dvs <- function() {
 #' Open custom derived variables file
 #'
 #' @description
-#' Opens the `custom_dvs.R` file in the user's default text editor.
-#' If running in RStudio, it will open in the RStudio source editor.
+#' Opens the `custom_dvs.R` file for editing.
 #' If the file doesn't exist, it will be created with default content.
 #'
 #' @return None
 #' @export
 open_custom_dvs <- function() {
-  # Ensure the file exists
-  create_custom_dvs_file() # Create the file if it doesn't exist
-
-  # Open the file in the appropriate editor
-  if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
-    # Open in RStudio source editor
-    rstudioapi::navigateToFile(custom_dvs_file)
-  } else {
-    # Open in the system's default editor
-    utils::file.edit(custom_dvs_file)
-  }
+  create_custom_dvs_file()
+  utils::file.edit(custom_dvs_file)
 }
