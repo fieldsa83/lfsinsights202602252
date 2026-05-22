@@ -334,8 +334,12 @@
                 <label for="north">North<span class="help-icon" title="Include territories data (Nunavut, N.W.T. and Yukon)"></span></label>
             </div>
         </div>
-
-        <div class="subsection-title">Supplemental Labour Market Indicators</div>
+        <a class="collapsible" onclick="toggleCollapsible('supplementscollapse')">
+            <span class="arrow" id="supplementscollapseArrow">▶</span>
+            Supplemental Labour Market Indicators
+        </a>
+        <div class="collapsible-content" id="supplementscollapse">
+		
         <div class="checkbox-grid">
             <div class="checkbox-item">
                 <input type="checkbox" id="lmi">
@@ -351,6 +355,7 @@
             </div>
         </div>
     </div>
+	    </div>
     
     <div class="form-section">
         <h3>

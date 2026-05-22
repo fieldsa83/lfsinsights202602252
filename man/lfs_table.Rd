@@ -41,16 +41,20 @@ lfs_table(
 
 \item{end_date}{End date of the range (YYYY-MM-DD).}
 
-\item{estimates}{List of estimate configurations. This can be either:
-- A nested list of estimate configurations (for multiple estimates)
-- A single list with est_type (for a single estimate)
-- Omitted (defaults to a simple sum)}
+\item{estimates}{List of estimate configurations. This can be either a nested list (for multiple estimates), a single list, or omitted (defaults to a simple sum). Each estimate sub-list can contain:
+\itemize{
+\item \code{est_name}: Character string for the output column name.
+\item \code{est_type}: The type of calculation: "sum", "ratio", or "ratio_distribution".
+\item \code{est_filter}: Optional filter applied specifically to this estimate.
+\item \code{ratio_numerator} & \code{ratio_denominator}: Required for "ratio" types.
+\item \code{var_name}: Required if \code{est_type = "ratio_distribution"}. The variable to calculate the distribution across.
+\item \code{ratio_type}: "percent" or "average" (default is "percent").
+\item \code{ratio_decimals}: Integer for rounding ratios (default is 1).
+}}
 
-\item{analysis_vars}{Variables to analyze (comma-separated string or character vector).
-Default is "PROV".}
+\item{analysis_vars}{Variables to analyze (comma-separated string or character vector). Default is "PROV".}
 
-\item{filter_condition}{Global filter condition applied during data loading (e.g., "AGE >= 15").
-This filter is applied before any estimate-specific filters.}
+\item{filter_condition}{Global filter condition applied during data loading (e.g., "AGE >= 15"). This filter is applied before any estimate-specific filters.}
 
 \item{weight_var}{Weighting variable to use (default: "FINALWT").}
 
@@ -68,6 +72,8 @@ This filter is applied before any estimate-specific filters.}
 
 \item{tabs_plus}{Whether to include TABS Plus data (default: FALSE).}
 
+\item{supplement}{Deprecated. Please use \code{supplement_lmi} instead.}
+
 \item{supplement_lmi}{Whether to include LMI (monthly) supplement data (default: FALSE).}
 
 \item{supplement_lmsi}{Whether to include LMSI (quarterly) supplement data (default: FALSE).}
@@ -79,6 +85,22 @@ This filter is applied before any estimate-specific filters.}
 \item{add_labels}{Whether to apply labels (default: FALSE).}
 
 \item{language}{Language for labels, "EN" or "FR" (default: "EN").}
+
+\item{weight_rounding}{Numeric factor for rounding estimate levels, including sum, numerator, and denominator (default: 100).}
+
+\item{include_marginals}{Logical. Whether to include marginal totals (default: TRUE).}
+
+\item{add_suppression_flag}{Logical. Whether to add basic suppression flags to the output (default: FALSE).}
+
+\item{calculate_change}{Logical. Whether to calculate period-over-period changes (default: FALSE).}
+
+\item{lag_period}{Integer. Number of periods to lag for the change calculation (default: 1).}
+
+\item{calculate_difference}{Logical. If TRUE, calculates the difference between two categories defined in \code{comparison_variable} (default: FALSE).}
+
+\item{comparison_variable}{Character. The name of the column containing the categories to compare (e.g., "GENDER"). Required if \code{calculate_difference = TRUE}.}
+
+\item{comparison_categories}{Character vector of length 2. The specific categories within the \code{comparison_variable} to calculate the difference between (e.g., \code{c("Male", "Female")}).}
 
 \item{...}{Additional parameters passed to the processing functions.}
 }

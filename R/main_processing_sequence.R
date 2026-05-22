@@ -20,10 +20,15 @@ process_lfs_data <- function(lfs_config_list) {
   
   # Validate required parameters
   if (missing(lfs_config_list)) {
-    stop("lfs_config_list is required")
+    cli::cli_abort("lfs_config_list is required")
   }
+
+  # Top banner + init beat (fires regardless of path — table or microdata_only)
+  .lfs_phase("LFS Insights")
+  .lfs_info("Initializing main processing sequence")
   
   # Check dates and create list of required dates based on ranges, filters and moving averages
+  # (determine_required_months emits its own "Determining required months ..." message)
   required_months <- determine_required_months(lfs_config_list$start_date, lfs_config_list$end_date, lfs_config_list = lfs_config_list)
   
   # Special case for microdata --skips the rest of this script
@@ -34,7 +39,7 @@ process_lfs_data <- function(lfs_config_list) {
   # Script continues if not microdata
   # Make sure estimates is provided and is a list
   if (is.null(lfs_config_list$estimates) || !is.list(lfs_config_list$estimates)) {
-    stop("The estimates parameter is required and must be a list")
+    cli::cli_abort("The {.field estimates} parameter is required and must be a list")
   }
   
   # Clean analysis vars (if string with commas, split it)
@@ -43,6 +48,7 @@ process_lfs_data <- function(lfs_config_list) {
   }
   
   # Initialize custom DVs if applicable
+  # (load_custom_dvs emits its own "Custom derived variables loaded from: ..." message)
   if (lfs_config_list$add_custom_dvs) {
     load_custom_dvs()
   }
@@ -52,7 +58,9 @@ process_lfs_data <- function(lfs_config_list) {
   # PHASE 2: EXECUTION LOOP (read in and calculate estimate(s) one month at a time)
   # Note: this does not include ratios or moving averages yet --this is simply levels (num and den) on monthly file
   # =========================================================================
-  
+
+  .lfs_phase("Loading microdata")
+
   # Create a list to store each estimate's results
   # Each element will be a list of data frames (one per month)
   estimate_results <- vector("list", length(lfs_config_list$estimates))
@@ -77,6 +85,8 @@ process_lfs_data <- function(lfs_config_list) {
     tryCatch(
       {
         # Load data for this month (applies global filter)
+        # (load_month_data emits "Loading data for: YYYY-MM" plus sub-lines
+        #  for each raw file type loaded)
         month_data <- load_month_data(current_date, lfs_config_list)
         
         # Process each estimate for this month
@@ -93,11 +103,11 @@ process_lfs_data <- function(lfs_config_list) {
           # Determine if estimate type is ratio distribution (ie needs auto dummy vars) or standard var
           if (!is.null(estimate$est_type) && estimate$est_type == "ratio_distribution") {
              # Call ratio distribution calculation
-             est_result <- calculate_distribution_summaries(month_data, estimate, current_date, lfs_config_list, required_months)
+             est_result <- calculate_distribution_summaries(month_data, estimate, current_date, lfs_config_list, required_months, est_name)
              
           } else {
              # Call the standard function (Sum or standard Ratio)
-             est_result <- calculate_estimate_summaries(month_data, estimate, current_date, lfs_config_list, required_months)
+             est_result <- calculate_estimate_summaries(month_data, estimate, current_date, lfs_config_list, required_months, est_name)
           }
           # -------------------------------------------
           
@@ -110,22 +120,28 @@ process_lfs_data <- function(lfs_config_list) {
         }
         
         # Discard raw data to free memory
+		.lfs_sub("Descarding raw microdata and retaining aggregated levels (num, den and bootstraps as applicable")
         rm(month_data)
         gc()
       },
       error = function(e) {
-        warning("Failed to process data for ", format(current_date, "%Y-%m"), ": ", e$message)
+        cli::cli_warn(c(
+          "Failed to process data for {format(current_date, '%Y-%m')}",
+          "i" = "{e$message}"
+        ))
       }
     )
   }
   
-  cat(format(Sys.time(), "%H:%M:%S"), "*** All months loaded, beginning post-processing ***\n")
+  #.lfs_success("All microdata processed, summary levels retained")
   
   
   # =========================================================================
   # PHASE 3: POST-PROCESS EACH ESTIMATE SEPARATELY (once all months are read in)
   # =========================================================================
-  
+
+  .lfs_phase("Calculating results")
+
   # Post-process each estimate separately
   final_results <- list()
   
@@ -139,14 +155,14 @@ process_lfs_data <- function(lfs_config_list) {
     est_months <- estimate_results[[i]]
     
     if (length(est_months) == 0) {
-      warning("No data found for estimate: ", est_name)
+      cli::cli_warn("No data found for estimate: {est_name}")
       next
     }
     
     est_data <- dplyr::bind_rows(est_months)
 
-  # Post-process this estimate
-  cat(format(Sys.time(), "%H:%M:%S"), "Post-processing estimate:", est_name, "\n")
+  # Top-level beat for this estimate
+  .lfs_info(paste("Calculating estimate:", est_name))
   
   # --- LOGIC FROM post_process_estimate BEGINS HERE ---
   
@@ -266,32 +282,38 @@ process_lfs_data <- function(lfs_config_list) {
   
   # Combine all processed estimates into a single dataframe
   if (length(final_results) == 0) {
-    stop("No estimates were post-processed")
+    cli::cli_abort("No estimates were post-processed")
   }
   
   
   # =========================================================================
   # PHASE 4: FINAL CLEANUP
   # =========================================================================
+
+  .lfs_phase("Finalizing output")
   
   if (length(final_results) == 0) {
-    stop("No estimates were post-processed")
+    cli::cli_abort("No estimates were post-processed")
   }
 
   # Bind all estimate dataframes together
+  .lfs_info("Combining all estimate dataframes together")
   final_data <- dplyr::bind_rows(final_results)
   
   # Apply labels if requested
+  # (label_maker emits its own "Applying labels (XX)" message)
   if (!is.null(lfs_config_list$add_labels) && lfs_config_list$add_labels) {
     final_data <- label_maker(final_data, lfs_config_list$language %||% "EN")
   }
   
   # Final cleaning (column ordering and dropping of temp vars)
+  .lfs_sub("Cleaning up column order and dropping temp variables")
    final_data <- clean_final_results(final_data)
   
-  # End timer
-  timer_result <- tictoc::toc(quiet = TRUE)
-  cat(format(Sys.time(), "%H:%M:%S"), paste0("Completed in ", format(timer_result$toc - timer_result$tic, nsmall = 1), " secs \n"))
+  # End timer & emit final completion line
+timer_result <- tictoc::toc(quiet = TRUE)
+elapsed <- round(timer_result$toc - timer_result$tic, 1)
+  .lfs_success(paste0("Completed in ", format(elapsed, nsmall = 1), " secs"))
   
   return(final_data)
 }

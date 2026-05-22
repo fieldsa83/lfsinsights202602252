@@ -46,6 +46,8 @@ lfs_microdata(
 
 \item{tabs_plus}{Whether to include TABS Plus data (default: FALSE).}
 
+\item{supplement}{Deprecated. Please use \code{supplement_lmi} instead.}
+
 \item{supplement_lmi}{Whether to include LMI (monthly) supplement data (default: FALSE).}
 
 \item{supplement_lmsi}{Whether to include LMSI (quarterly) supplement data (default: FALSE).}

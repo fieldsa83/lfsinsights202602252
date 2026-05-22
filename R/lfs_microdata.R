@@ -80,7 +80,7 @@ lfs_microdata <- function(
   # Backwards compatibility: Map 'supplement' to 'supplement_lmi'
   if (supplement) {
     supplement_lmi <- TRUE
-    message("Note: The 'supplement' argument is deprecated. Now using 'supplement_lmi' instead.")
+    cli::cli_inform("Note: The {.arg supplement} argument is deprecated. Now using {.arg supplement_lmi} instead.")
   }
 
   # Create configuration list
@@ -123,11 +123,12 @@ lfs_microdata <- function(
 process_microdata <- function(lfs_config_list, required_months) {
 
    # Initialize custom DVs if applicable
+   # (load_custom_dvs emits its own "Custom derived variables loaded from: ..." message)
   if (lfs_config_list$add_custom_dvs) {
     load_custom_dvs()
   }
 
-  cat(format(Sys.time(), "%H:%M:%S"), "*** Processing microdata ***\n")
+  .lfs_phase("Loading microdata")
 
   all_data <- list()
   for (current_date in required_months) {
@@ -135,6 +136,8 @@ process_microdata <- function(lfs_config_list, required_months) {
     tryCatch(
       {
         # Just load data without summarizing
+        # (load_month_data emits "Loading data for: YYYY-MM" plus sub-lines
+        #  for each raw file type loaded)
         data <- load_month_data(current_date, lfs_config_list)
         all_data[[length(all_data) + 1]] <- data
 
@@ -143,19 +146,28 @@ process_microdata <- function(lfs_config_list, required_months) {
         gc()
       },
       error = function(e) {
-        warning("Failed to load microdata for ", format(current_date, "%Y-%m"), ": ", e$message)
+        cli::cli_warn(c(
+          "Failed to load microdata for {format(current_date, '%Y-%m')}",
+          "i" = "{e$message}"
+        ))
       }
     )
   }
 
   if (length(all_data) == 0) {
-    stop("No microdata was loaded")
+    cli::cli_abort("No microdata was loaded")
   }
 
+  #.lfs_success("All months of microdata loaded.")
+  
+  .lfs_phase("Finalizing output")
+  
   # Combine results
+  .lfs_info("Combining all dataframes together")
   combined <- dplyr::bind_rows(all_data)
 
   # Apply labels if requested
+  # (label_maker emits its own "Applying labels (XX)" message)
   if (lfs_config_list$add_labels) {
     combined <- combined %>% label_maker(lfs_config_list$language)
   }
@@ -164,11 +176,11 @@ process_microdata <- function(lfs_config_list, required_months) {
   combined <- combined %>%
     dplyr::select(DATE, HHLDID, LINE, dplyr::everything())
 
-  cat(format(Sys.time(), "%H:%M:%S"), "*** Microdata processing complete ***\n")
+  # End timer & emit final completion line
+timer_result <- tictoc::toc(quiet = TRUE)
+elapsed <- round(timer_result$toc - timer_result$tic, 1)
 
-  # End timer
-  timer_result <- tictoc::toc(quiet = TRUE)
-  cat(format(Sys.time(), "%H:%M:%S"), paste0("Completed in ", format(timer_result$toc - timer_result$tic, nsmall = 1), " secs \n"))
+.lfs_success(paste0("Completed in ", format(elapsed, nsmall = 1), " secs"))
 
   return(combined)
 }

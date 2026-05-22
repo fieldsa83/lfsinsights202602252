@@ -5,7 +5,8 @@
 #' @return Data frame with loaded data
 #' @keywords internal
 load_month_data <- function(current_date, lfs_config_list) {
-  cat(format(Sys.time(), "%H:%M:%S"), "Loading data for:", format(current_date, "%Y%m"), "\n")
+  # Top-level beat for this month (YYYY-MM format, not YYYYMM, for readability)
+  .lfs_info(paste("Loading data for:", format(current_date, "%Y-%m")))
 
   # Determine if using prerelease
   use_prerelease <- lfs_config_list$prerelease &&
@@ -87,12 +88,13 @@ load_month_data <- function(current_date, lfs_config_list) {
 
   # Add custom DVs
   if (lfs_config_list$add_custom_dvs) {
+   .lfs_sub(paste("Adding custom derived variables"))
     data <- data %>% custom_dvs()
   }
 
   # Apply global filter condition if provided
   if (!is.null(lfs_config_list$filter_condition) && lfs_config_list$filter_condition != "") {
-    cat(format(Sys.time(), "%H:%M:%S"), "  Applying global filter:", lfs_config_list$filter_condition, "\n")
+    .lfs_sub(paste("Applying global filter:", lfs_config_list$filter_condition))
     data <- data %>%
       dplyr::filter(!!rlang::parse_expr(lfs_config_list$filter_condition))
   }

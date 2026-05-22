@@ -30,7 +30,7 @@ label_maker <- function(data, language = "EN") {
   metadata_path <- get_config("lfs_metadata_path")
   json_files <- list.files(path = metadata_path, pattern = "\\.json$", full.names = TRUE)
 
-  cat(format(Sys.time(), "%H:%M:%S"), "Applying labels (", language, ") \n")
+  .lfs_sub(paste0("Applying labels (", language, ")"))
 
   # Initialize an empty list for labels
   labels <- list()
@@ -54,7 +54,7 @@ label_maker <- function(data, language = "EN") {
         }
       },
       error = function(e) {
-        cat("  Error loading file:", e$message, "\n")
+        cli::cli_warn("Error loading label file: {e$message}")
       }
     )
   }

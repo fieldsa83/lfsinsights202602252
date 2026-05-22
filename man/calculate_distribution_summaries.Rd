@@ -10,7 +10,8 @@ calculate_distribution_summaries(
   estimate,
   current_date,
   lfs_config_list,
-  required_months
+  required_months,
+  est_name
 )
 }
 \arguments{

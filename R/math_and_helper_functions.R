@@ -14,7 +14,7 @@ apply_rounding <- function(data, cols_to_round, rounding_factor) {
     return(data)
   }
 
-  cat(format(Sys.time(), "%H:%M:%S"), "Applying rounding (to levels) \n")
+  .lfs_sub("Applying rounding (to levels)")
   
   # Loop through each specified column to round
   for (col_name in cols_to_round) {
@@ -49,7 +49,7 @@ apply_rounding <- function(data, cols_to_round, rounding_factor) {
 #' @export
 calculate_ratio <- function(data, is_percent = TRUE, decimals = 1, weight_var = "FINALWT") {
 
-  cat(format(Sys.time(), "%H:%M:%S"), "Calculating ratios \n")
+  .lfs_sub("Calculating ratios")
   
   # Identify numerator and denominator columns for the main weight variable
   main_num_col <- paste0(weight_var, "_num")
@@ -113,7 +113,7 @@ calculate_ratio <- function(data, is_percent = TRUE, decimals = 1, weight_var = 
 #' @return Data frame with added change columns
 #' @export
 calculate_change <- function(data, analysis_vars, weight_var, est_type, lag_period, is_percent, calculate_percent = TRUE) {
-  cat(format(Sys.time(), "%H:%M:%S"), "Calculating changes \n")
+  .lfs_sub("Calculating changes")
 
   group_vars <- analysis_vars
 
@@ -203,14 +203,14 @@ calculate_difference <- function(
 ) {
   stopifnot(est_type %in% c("ratio", "ratio_distribution"))
   if (is.null(estimate$ratio_numerator) || !nzchar(estimate$ratio_numerator)) {
-    stop("For proportions, `estimate$ratio_numerator` must be supplied.")
+    cli::cli_abort("For proportions, {.field estimate$ratio_numerator} must be supplied.")
   }
   if (!is.null(comparison_variable)) {
     if (!(comparison_variable %in% analysis_vars)) {
-      stop("`comparison_variable` must be one of `analysis_vars`.")
+      cli::cli_abort("{.field comparison_variable} must be one of {.field analysis_vars}.")
     }
   }
-    cat(format(Sys.time(), "%H:%M:%S"), "Calculating differences \n")
+    .lfs_sub("Calculating differences")
 
   #Converts string input for comparison categories to numeric vector
   comparison_categories <- comparison_categories %>%
@@ -222,7 +222,7 @@ calculate_difference <- function(
   # Ratio columns
   prop_col <- paste0(weight_var, "_ratio")
   if (!(prop_col %in% names(data))) {
-    stop(sprintf("Expected ratio column '%s' not found in `data`.", prop_col))
+    cli::cli_abort("Expected ratio column {.val {prop_col}} not found in {.field data}.")
   }
 
   # -----------------------
@@ -317,7 +317,7 @@ calculate_difference <- function(
 #' @export
 add_suppression_flag <- function(data, cols_to_check, has_prov = TRUE) {
 
-  cat(format(Sys.time(), "%H:%M:%S"), "Applying suppression flags \n")
+  .lfs_sub("Applying suppression flags")
   
   # Function to apply suppression rules
   apply_suppression <- function(col, prov) {
@@ -358,7 +358,7 @@ add_suppression_flag <- function(data, cols_to_check, has_prov = TRUE) {
 #' @export
 calculate_moving_avg <- function(data, group_vars, value_cols, periods, filter_months = NULL, filter_years = NULL, lfs_config_list) {
 
-  cat(format(Sys.time(), "%H:%M:%S"), "Calculating moving averages \n")
+  .lfs_sub("Calculating moving averages")
 
 
   # Create target dates from the date range
@@ -443,7 +443,7 @@ calculate_moving_avg <- function(data, group_vars, value_cols, periods, filter_m
 complete_combinations <- function(data, analysis_vars, weight_var) {
   # Check if there are analysis variables to complete by; return sorted data if none
   if (length(analysis_vars) == 0 || all(analysis_vars == "")) {
-    cat(format(Sys.time(), "%H:%M:%S"), "Skipping combination completion: No analysis variables specified.", "\n")
+    .lfs_sub("Skipping combination completion: No analysis variables specified.")
     if (nrow(data) > 0) {
       data <- data %>% dplyr::arrange(DATE)
     }
@@ -452,7 +452,7 @@ complete_combinations <- function(data, analysis_vars, weight_var) {
 
   # Check if data is empty
   if (nrow(data) == 0) {
-    cat("Error: Skipping combination completion. Input data frame is empty.", "\n")
+    cli::cli_warn("Skipping combination completion. Input data frame is empty.")
     return(data) # Return the empty dataframe
   }
 
@@ -461,13 +461,13 @@ complete_combinations <- function(data, analysis_vars, weight_var) {
   # Dynamically find value columns (main weight + bootstrap weights for sum/num/den)
   # Ensure weight_var is valid before constructing pattern
   if (is.null(weight_var) || weight_var == "") {
-    stop("Error in complete_combinations: weight_var is missing or empty")
+    cli::cli_abort("Error in complete_combinations: weight_var is missing or empty")
   }
   value_cols_pattern <- paste0("^(", weight_var, "|BW_", weight_var, "_\\d+)_(sum|num|den)$")
   value_cols_to_fill <- grep(value_cols_pattern, names(data), value = TRUE)
 
   if (length(value_cols_to_fill) == 0) {
-    warning("Warning in complete_combinations: No value columns matching the pattern found to fill. Returning original data.")
+    cli::cli_warn("complete_combinations: No value columns matching the pattern found to fill. Returning original data.")
     # Still sort the data
     data <- data %>% dplyr::arrange(DATE, dplyr::across(dplyr::all_of(analysis_vars)))
     return(data)
@@ -509,11 +509,15 @@ complete_combinations <- function(data, analysis_vars, weight_var) {
     # Ensure correct handling if analysis_vars is empty/null checked above
     dplyr::arrange(DATE, dplyr::across(dplyr::all_of(analysis_vars)))
 
-  cat(format(Sys.time(), "%H:%M:%S"), "Ensuring complete combinations by DATE and analysis vars. Input rows: ", nrow(data), " Output rows: ", nrow(completed_data), "\n")
+  .lfs_sub(paste0(
+    "Ensuring complete combinations by DATE and analysis vars (Input rows: ",
+    nrow(data), "  Output rows: ", nrow(completed_data),
+	" )"
+  ))
 
   # Optional: Add a check for unexpected row explosion
   if (nrow(completed_data) > nrow(data) * 2 && nrow(data) > 0) { # Heuristic check
-    warning("Warning in complete_combinations: Row count increased significantly (more than double). Check analysis variables and data sparsity.")
+    cli::cli_warn("complete_combinations: Row count increased significantly (more than double). Check analysis variables and data sparsity.")
     # Consider adding glimpse(data) and glimpse(completed_data) here for debugging if needed
     # utils::str(data)
     # utils::str(completed_data)
@@ -539,7 +543,7 @@ complete_combinations <- function(data, analysis_vars, weight_var) {
 #' @export
 calculate_bootstrap_variance <- function(data, est_type, weight_var, is_change = FALSE, is_diff = FALSE) {
 
-  cat(format(Sys.time(), "%H:%M:%S"), "Calculating bootstrap variance \n")
+  .lfs_sub("Calculating bootstrap variance")
   
   # =========================================================================
   # 1. SETUP: Determine Column Names
@@ -662,10 +666,9 @@ calculate_marginal_totals <- function(data, analysis_vars, est_config = NULL) {
   # This ensures proper length calculation below
   analysis_vars <- analysis_vars[analysis_vars != "" & !is.na(analysis_vars)]
 
-  # 2. Early Exit Check (Your Logic)
-  # If no variables OR (only 1 variable AND it is a distribution), stop here.
+  # 2. Early Exit 
   if (length(analysis_vars) == 0) {      
-      cat(format(Sys.time(), "%H:%M:%S"), "No marginal totals to calculate\n")
+      .lfs_sub("No marginal totals to calculate")
       return(data)
   }
   
@@ -710,12 +713,12 @@ calculate_marginal_totals <- function(data, analysis_vars, est_config = NULL) {
   
   if (length(analysis_vars) == 0 && !is.null(est_config) && est_config$est_type == "ratio_distribution") {
 	
-     cat(format(Sys.time(), "%H:%M:%S"), "No marginal totals to calculate. Sorting distribution categories \n")
+     .lfs_sub("No marginal totals to calculate. Sorting distribution categories")
 	 data <- data %>% dplyr::arrange(dplyr::across(dplyr::all_of(all_vars)))
      return(data)
   } 
   else {
-    cat(format(Sys.time(), "%H:%M:%S"), "Calculating marginal totals.", "\n")
+    .lfs_sub("Calculating marginal totals")
   # Generate marginal totals, preserving estimate information
   data_marginals <- purrr::map(0:(length(analysis_vars) - 1), ~ {
     combinations <- utils::combn(analysis_vars, .x, simplify = FALSE)

@@ -111,10 +111,10 @@ find_case_insensitive_dir <- function(path) {
             lower_name <- tolower(var_name)
             .lfsinsights_env[[lower_name]] <- actual_path
 
-            cat("Converted and resolved path for", var_name, ":", actual_path, "\n")
+            cli::cli_inform("Converted and resolved path for {var_name}: {actual_path}")
           },
           error = function(e) {
-            warning(paste("Error finding case-insensitive path for", var_name, ":", e$message))
+            cli::cli_warn("Error finding case-insensitive path for {var_name}: {e$message}")
             # Fall back to the original converted path without case resolution
             lower_name <- tolower(var_name)
             .lfsinsights_env[[lower_name]] <- linux_path
@@ -140,7 +140,7 @@ find_case_insensitive_dir <- function(path) {
 #' @export
 get_config <- function(name) {
   if (!exists(name, envir = .lfsinsights_env, inherits = FALSE)) {
-    stop(paste("Configuration value not found:", name))
+    cli::cli_abort("Configuration value not found: {.val {name}}")
   }
   get(name, envir = .lfsinsights_env, inherits = FALSE)
 }
@@ -194,7 +194,7 @@ create_custom_dvs_file <- function() {
   }
 
   if (!file.exists(custom_dvs_file)) {
-    message(format(Sys.time(), "%H:%M:%S"), " Custom derived variables file not found. Creating the file with default content.")
+    .lfs_info("Custom derived variables file not found. Creating the file with default content.")
 
     # Default content for the custom_dvs.R file
     custom_dvs_content <- '# Custom Derived Variables - function returns a data frame with custom DVs added.
@@ -280,8 +280,11 @@ load_custom_dvs <- function() {
   # Source the custom_dvs.R file to load the transformations
   invisible(source(custom_dvs_file)) # Use invisible() to suppress output
   custom_dvs_file_print <- gsub("/", "\\\\", custom_dvs_file)
-  cat(format(Sys.time(), "%H:%M:%S"), "Custom derived variables loaded from: ", custom_dvs_file_print, "\n")
-}
+.lfs_sub(paste(
+    "Custom derived variables loaded from:", 
+    cli::col_silver(custom_dvs_file_print)
+  ))
+  }
 
 #' Open custom derived variables file
 #'

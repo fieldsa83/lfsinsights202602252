@@ -7,7 +7,7 @@
 #' @param required_months All required months
 #' @return Data frame with stacked summaries for all levels
 #' @keywords internal
-calculate_distribution_summaries <- function(month_data, estimate, current_date, lfs_config_list, required_months) {
+calculate_distribution_summaries <- function(month_data, estimate, current_date, lfs_config_list, required_months, est_name) {
   
   # 1. Get the variable name
   target_var <- estimate$var_name %||% estimate$ratio_numerator
@@ -34,7 +34,7 @@ calculate_distribution_summaries <- function(month_data, estimate, current_date,
     month_data[["TOTAL"]] <- 1
     
     # 4. Calculate
-    lvl_result <- calculate_estimate_summaries(month_data, temp_est, current_date, lfs_config_list, required_months)
+    lvl_result <- calculate_estimate_summaries(month_data, temp_est, current_date, lfs_config_list, required_months, est_name)
     
     # 5. Add the identifying column 
     # (If lvl is NA, this puts a real NA in the column)
@@ -68,7 +68,7 @@ calculate_distribution_summaries <- function(month_data, estimate, current_date,
 #' @param required_months All required months
 #' @return Data frame with summaries
 #' @keywords internal
-calculate_estimate_summaries <- function(month_data, estimate, current_date, lfs_config_list, required_months) {
+calculate_estimate_summaries <- function(month_data, estimate, current_date, lfs_config_list, required_months, est_name) {
   
   # --- STEP 1: PREPARATION & CONFIGURATION ---
   
@@ -80,7 +80,7 @@ calculate_estimate_summaries <- function(month_data, estimate, current_date, lfs
   # (e.g., if this specific estimate is only for "Youth", filter now)
   filtered_data <- month_data
   if (!is.null(estimate$est_filter)) {
-    cat(format(Sys.time(), "%H:%M:%S"), "  Applying estimate filter:", estimate$est_filter, "\n")
+    .lfs_sub(paste("Applying estimate filter:", estimate$est_filter))
     filtered_data <- filtered_data %>%
       dplyr::filter(!!rlang::parse_expr(estimate$est_filter))
   }
@@ -95,13 +95,44 @@ calculate_estimate_summaries <- function(month_data, estimate, current_date, lfs
 
   # --- STEP 2: CALCULATION (Formerly calculate_summaries) ---
 
+  # Emit the "Determining summary stats for: YYYY-MM" top-level beat.
+  # The configuration details follow as a dim continuation line (Option A
+  # split pattern). If est_type is NULL it effectively means "sum".
+  {
+    effective_type <- est_config$est_type %||% "sum"
+    if (effective_type %in% c("ratio", "ratio_distribution")) {
+      details <- paste0(
+        "(Type: ", effective_type,
+        ", Num: ", est_config$ratio_numerator,
+        ", Den: ", est_config$ratio_denominator,
+        ", Weight: ", est_config$weight_var,
+        ", Bootstraps: ", est_config$bootstraps,
+        ")"
+      )
+    } else {
+      details <- paste0(
+        "(Type: ", effective_type,
+        ", Weight: ", est_config$weight_var,
+        ", Bootstraps: ", est_config$bootstraps,
+        ")"
+      )
+    }
+.lfs_sub(paste(
+  paste0("Determining summary stats for ", "'", est_name, "'"),
+  cli::col_silver(details)
+))
+  }
+
   # Get summaries definition based on the configured type
   summaries <- determine_summaries_to_generate(est_config)
 
-  cat(
-    format(Sys.time(), "%H:%M:%S"), "Calculating summaries by DATE ",
-    paste(est_config$analysis_vars, collapse = ", "), "\n"
-  )
+  .lfs_sub(paste0(
+    "Calculating summary levels for '", 
+	est_name,
+	"' by analysis variables (DATE, ",
+    paste0(est_config$analysis_vars, collapse = ", "),
+	")" 
+  ))
 
   # Run dplyr group_by and summarise
   # Note: We use 'filtered_data' and 'est_config' prepared in Step 1
@@ -120,30 +151,18 @@ calculate_estimate_summaries <- function(month_data, estimate, current_date, lfs
 #' @keywords internal
 determine_summaries_to_generate <- function(lfs_config_list) {
   # Error check for ratio est_type
-  if (lfs_config_list$est_type == "ratio" && (is.null(lfs_config_list$ratio_numerator) ||
+  effective_type <- lfs_config_list$est_type %||% "sum"
+  if (effective_type == "ratio" && (is.null(lfs_config_list$ratio_numerator) ||
     is.na(lfs_config_list$ratio_numerator) ||
     lfs_config_list$ratio_numerator == "" ||
     is.null(lfs_config_list$ratio_denominator) ||
     is.na(lfs_config_list$ratio_denominator) ||
     lfs_config_list$ratio_denominator == "")) {
-    stop("Error: When 'est_type' is set to 'ratio', 'ratio_numerator' and 'ratio_denominator' must be specified.")
+    cli::cli_abort("When {.field est_type} is set to {.val ratio}, {.field ratio_numerator} and {.field ratio_denominator} must be specified.")
   }
 
-  if (lfs_config_list$est_type == "ratio") {
-    cat(
-      format(Sys.time(), "%H:%M:%S"), "Determining summary stats (Type: numerator and denominator",
-      lfs_config_list$ratio_numerator, lfs_config_list$ratio_denominator,
-      ". Weight:", lfs_config_list$weight_var,
-      ". Bootstraps:", lfs_config_list$bootstraps, ")\n"
-    )
-  } else {
-    cat(
-      format(Sys.time(), "%H:%M:%S"), "Determining summary stats (Type:",
-      lfs_config_list$est_type,
-      ". Weight:", lfs_config_list$weight_var,
-      ". Bootstraps:", lfs_config_list$bootstraps, ")\n"
-    )
-  }
+  # Note: the "Determining summary stats" message is emitted by the caller
+  # (calculate_estimate_summaries) where current_date is in scope.
 
   weight_var <- lfs_config_list$weight_var
   summaries <- list()

@@ -22,15 +22,19 @@ determine_required_months <- function(start_date, end_date, moving_avg = 1, filt
 
     # Check if dates are valid
     if (inherits(start_date_obj, "try-error") || is.na(start_date_obj)) {
-      stop("Invalid start_date format. Please provide a date in YYYY-MM-DD format.")
+      cli::cli_abort("Invalid start_date format. Please provide a date in YYYY-MM-DD format.")
     }
     if (inherits(end_date_obj, "try-error") || is.na(end_date_obj)) {
-      stop("Invalid end_date format. Please provide a date in YYYY-MM-DD format.")
+      cli::cli_abort("Invalid end_date format. Please provide a date in YYYY-MM-DD format.")
     }
 
     # Check if start_date is before or equal to end_date
     if (start_date_obj > end_date_obj) {
-      stop("start_date must be before or equal to end_date")
+      cli::cli_abort(c(
+        "start_date must be before or equal to end_date",
+        "i" = paste("start_date:", format(start_date_obj)),
+        "i" = paste("end_date:  ", format(end_date_obj))
+      ))
     }
 
     # Standardize to first day of month
@@ -39,14 +43,14 @@ determine_required_months <- function(start_date, end_date, moving_avg = 1, filt
 
     # Check if the day was changed during standardization and print a message
     if (format(start_date_obj, "%d") != "01") {
-      cat(sprintf(
-        "start_date day was changed from %s to 01 (first day of month) \n",
+      .lfs_info(sprintf(
+        "start_date day was changed from %s to 01 (first day of month)",
         format(start_date_obj, "%d")
       ))
     }
     if (format(end_date_obj, "%d") != "01") {
-      cat(sprintf(
-        "end_date day was changed from %s to 01 (first day of month) \n",
+      .lfs_info(sprintf(
+        "end_date day was changed from %s to 01 (first day of month)",
         format(end_date_obj, "%d")
       ))
     }
@@ -130,7 +134,14 @@ determine_required_months <- function(start_date, end_date, moving_avg = 1, filt
   required_months <- required_months[required_months >= min_date &
     required_months <= as.Date(end_date)]
 
-  cat(format(Sys.time(), "%H:%M:%S"), "Creating list of required months to read in:", format(required_months, "%Y%m"), "\n")
+  # Emit the list of required months as a timestamped info line with the
+  # dates on a following continuation line (dim). The caller (process_lfs_data)
+  # does not re-print this, so this message is authoritative whether the
+  # function is called standalone or internally.
+.lfs_sub(paste(
+  sprintf("Determining required months (%d in total):", length(required_months)),
+  cli::col_silver(paste(format(required_months, "%Y-%m"), collapse = ", "))
+))
 
   return(required_months)
 }

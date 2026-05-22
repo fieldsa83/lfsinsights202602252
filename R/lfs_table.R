@@ -84,7 +84,7 @@ lfs_table <- function(
   # Backwards compatibility: Map 'supplement' to 'supplement_lmi'
   if (supplement) {
     supplement_lmi <- TRUE
-    message("Note: The 'supplement' argument is deprecated. Now using 'supplement_lmi' instead.")
+    cli::cli_inform("Note: The {.arg supplement} argument is deprecated. Now using {.arg supplement_lmi} instead.")
   }
   
   # Check if estimates is a simple list (not nested) and convert it

@@ -14,8 +14,8 @@
 #' @return Data frame with TABS data
 #' @keywords internal
 load_tabs_data <- function(current_date, use_prerelease = FALSE, lfs_config_list) {
-  # Show progress
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading LFS TABS for", format(current_date, "%Y%m"), "\n")
+  # Show progress (as an indented sub-line under "Loading data for: YYYY-MM")
+  .lfs_sub("LFS TABS")
 
   # Format the filename using 2-digit month and 2-digit year
   file_name <- paste0("tab", format(current_date, "%m%y"), ".prn")
@@ -45,7 +45,7 @@ load_tabs_data <- function(current_date, use_prerelease = FALSE, lfs_config_list
     )
 
   if (is.null(data) | nrow(data) <1) {
-    stop("Error in processing TABS.")
+    cli::cli_abort("Error in processing TABS.")
   }
 
   return(data)
@@ -58,7 +58,7 @@ load_tabs_data <- function(current_date, use_prerelease = FALSE, lfs_config_list
 #' @return Data frame with TABS Plus data or NULL if not found
 #' @keywords internal
 load_plus_data <- function(current_date, use_prerelease = FALSE) {
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading TABPLUS for", format(current_date, "%Y%m"), "\n")
+  .lfs_sub("TABPLUS")
 
   # Try both common variants
   variants <- c(
@@ -80,7 +80,7 @@ load_plus_data <- function(current_date, use_prerelease = FALSE) {
     }
   }
 
-  warning("No matching Tabplus file found for date: ", format(current_date, "%Y%m"))
+  cli::cli_warn("No matching Tabplus file found for date: {format(current_date, '%Y-%m')}")
   return(NULL)
 }
 
@@ -93,7 +93,7 @@ load_plus_data <- function(current_date, use_prerelease = FALSE) {
 #' @keywords internal
 load_north_data <- function(current_date, use_prerelease = FALSE, lfs_config_list) {
   # Show progress
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading LFS NORTH (Nunavut, N.W.T. and Yukon) for", format(current_date, "%Y%m"), "\n")
+  .lfs_sub("LFS NORTH (Nunavut, N.W.T. and Yukon)")
 
   # Format month and year components
   month <- format(current_date, "%m")
@@ -146,7 +146,7 @@ load_north_data <- function(current_date, use_prerelease = FALSE, lfs_config_lis
         territory_data_list[[territory]] <- data
       },
       error = function(e) {
-        warning(paste("Could not read", territory, "file:", e$message))
+        cli::cli_warn("Could not read {territory} file: {e$message}")
         NULL
       }
     )
@@ -154,7 +154,7 @@ load_north_data <- function(current_date, use_prerelease = FALSE, lfs_config_lis
 
   # Combine all territory data
   if (length(territory_data_list) == 0) {
-    warning("No territory data could be processed for date: ", format(current_date, "%Y%m"))
+    cli::cli_warn("No territory data could be processed for date: {format(current_date, '%Y-%m')}")
     return(NULL)
   }
 
@@ -162,7 +162,7 @@ load_north_data <- function(current_date, use_prerelease = FALSE, lfs_config_lis
   combined_data <- dplyr::bind_rows(territory_data_list)
 
   if (nrow(combined_data) == 0) {
-    warning("No records found in NORTH data files for date: ", format(current_date, "%Y%m"))
+    cli::cli_warn("No records found in NORTH data files for date: {format(current_date, '%Y-%m')}")
     return(NULL)
   }
 
@@ -177,7 +177,7 @@ load_north_data <- function(current_date, use_prerelease = FALSE, lfs_config_lis
 #' @keywords internal
 load_supplement_data <- function(current_date, use_prerelease = FALSE, lfs_config_list) {
   df_main <- NULL
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading Monthly Supplement data for", format(current_date, "%Y%m"), "\n")
+  .lfs_sub("Monthly Supplement data")
 
   base_path <- file.path(get_config("lfs_supplement_path"), "LMI", format(current_date, "%Y"), format(current_date, "%Y%m"))
   base_name <- paste0("supp_final_", format(current_date, "%Y%m"), ".sas7bdat")
@@ -186,7 +186,7 @@ load_supplement_data <- function(current_date, use_prerelease = FALSE, lfs_confi
   if (file.exists(file_path)) {
     df_main <- haven::read_sas(file_path) %>% dplyr::mutate(DATE = current_date)
   } else {
-    warning("No matching Monthly Supplement file found for date: ", format(current_date, "%Y%m"))
+    cli::cli_warn("No matching Monthly Supplement file found for date: {format(current_date, '%Y-%m')}")
   }
  
   #Load bootstrap weights if requested
@@ -203,7 +203,7 @@ load_supplement_data <- function(current_date, use_prerelease = FALSE, lfs_confi
 #' @return Data frame with SUPPLEMENT data or NULL if not found
 #' @keywords internal
 load_quarterly_supplement_data <- function(current_date, lfs_config_list) {
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading Quarterly Supplement data for", format(current_date, "%Y%m"), "\n")
+  .lfs_sub("Quarterly Supplement data")
   
   current_month <- as.numeric(format(current_date, "%m"))
  
@@ -214,7 +214,7 @@ load_quarterly_supplement_data <- function(current_date, lfs_config_list) {
     season_upper <- "Fall"
     season_lower <- "fall"
   } else {
-    warning("No Quarterly Supplement data for January to June")
+    cli::cli_warn("No Quarterly Supplement data for January to June")
   }
 
   base_path <- file.path(get_config("lfs_supplement_path"), "LMSI", format(current_date, "%Y"), season_upper)
@@ -224,7 +224,7 @@ load_quarterly_supplement_data <- function(current_date, lfs_config_list) {
   if (file.exists(file_path)) {
     df_main <- haven::read_sas(file_path) %>% dplyr::mutate(DATE = current_date)
   } else {
-    warning("No matching Quarterly Supplement file found for date: ", format(current_date, "%Y%m"))
+    cli::cli_warn("No matching Quarterly Supplement file found for date: {format(current_date, '%Y-%m')}")
   return(NULL)
   }
 
@@ -242,7 +242,7 @@ load_quarterly_supplement_data <- function(current_date, lfs_config_list) {
 #' @return Data frame with SUPPLEMENT data or NULL if not found
 #' @keywords internal
 load_disability_supplement_data <- function(current_date, lfs_config_list) {
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading Disability Supplement data for", format(current_date, "%Y%m"), "\n")
+  .lfs_sub("Disability Supplement data")
 
   base_path <- file.path(get_config("lfs_supplement_path"), "DLMI", format(current_date, "%Y"))
   base_name <- paste0("dlmi_final_", format(current_date, "%Y"), ".sas7bdat")
@@ -251,7 +251,7 @@ load_disability_supplement_data <- function(current_date, lfs_config_list) {
   if (file.exists(file_path)) {
     df_main <- haven::read_sas(file_path) %>% dplyr::mutate(DATE = current_date)
   } else {
-    warning("No matching Disability Supplement file found for date: ", format(current_date, "%Y%m"))
+    cli::cli_warn("No matching Disability Supplement file found for date: {format(current_date, '%Y-%m')}")
     return(NULL)
   }
 
@@ -273,7 +273,7 @@ load_disability_supplement_data <- function(current_date, lfs_config_list) {
 load_bootstrap_data <- function(current_date, use_prerelease = FALSE, lfs_config_list) {
   bw_weight <- toupper(lfs_config_list$weight_var) # Ensure uppercase
 
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading Bootstraps (", bw_weight, ")", format(current_date, "%Y%m"), "\n")
+  .lfs_sub(paste0("Bootstraps (", bw_weight, ")"))
 
   file_name <- paste0("bootstrap_prov_", tolower(bw_weight), "_", format(current_date, "%Y%m"), ".sas7bdat")
 
@@ -290,7 +290,7 @@ load_bootstrap_data <- function(current_date, use_prerelease = FALSE, lfs_config
   }
 
   if (!file.exists(file_path)) {
-    warning("Bootstrap file not found: ", file_path)
+    cli::cli_warn("Bootstrap file not found: {file_path}")
     return(NULL)
   }
 
@@ -319,20 +319,20 @@ load_supplement_bootstraps <- function(df_main, current_date, base_path, base_na
 	#Creates bootstrap filename based on name of main datafile
 	if (lfs_config_list$supplement_lmi) {
 		file_name_bootstraps <- sub("supp_final", "supp_bootstrap_weights", base_name)
-		supp_type = "Monthly Supplement "
+		supp_type = "Monthly Supplement"
 		join_cols_bootstraps="HHLDID"
 	} else if (lfs_config_list$supplement_lmsi) {
 		file_name_bootstraps <- sub("supp_final", "supp_bs_weights", base_name)
-		supp_type = "Quarterly Supplement "
+		supp_type = "Quarterly Supplement"
 		join_cols_bootstraps="HHLDID"
 	} else if (lfs_config_list$supplement_dlmi) {
 		file_name_bootstraps <- sub("dlmi_final", "dlmi_bootstrap", base_name)
-		supp_type = "Disability Supplement "
+		supp_type = "Disability Supplement"
 		join_cols_bootstraps=c("HHLDID","LINE","SYEAR","SMTH")
 	}
 
-	# Print loading message with timestamp
-	cat(format(Sys.time(), "%H:%M:%S"), "-Loading Bootstraps for ", supp_type , "for date: ", format(current_date, "%Y%m"), "\n")
+	# Print loading message (sub-line)
+	.lfs_sub(paste0("Bootstraps for ", supp_type))
 
 	# Create file name
 	file_path_bootstraps <- file.path(base_path, file_name_bootstraps)
@@ -340,7 +340,7 @@ load_supplement_bootstraps <- function(df_main, current_date, base_path, base_na
 	  if (file.exists(file_path_bootstraps)) {
 	  df_bootstrap <- haven::read_sas(file_path_bootstraps)
 	} else {
-	  warning("No matching Bootstrap file found for ", supp_type, "for date: ", format(current_date, "%Y%m"))
+	  cli::cli_warn("No matching Bootstrap file found for {supp_type} for date: {format(current_date, '%Y-%m')}")
 	}
 
 	# Rename bootstrap weight columns based on the weight type (all three supplements have the same naming convention for bootstrap weights)
@@ -374,7 +374,7 @@ load_supplement_bootstraps <- function(df_main, current_date, base_path, base_na
 load_bootstrap_north_data <- function(current_date, use_prerelease = FALSE, lfs_config_list) {
   bw_weight <- toupper(lfs_config_list$weight_var) # Ensure uppercase
 
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading North Bootstraps (", bw_weight, ")", format(current_date, "%Y%m"), "\n")
+  .lfs_sub(paste0("North Bootstraps (", bw_weight, ") (Nunavut, N.W.T. and Yukon)"))
 
   file_name <- paste0("bootstrap_terr_", tolower(bw_weight), "_", format(current_date, "%Y%m"), ".sas7bdat")
 
@@ -391,7 +391,7 @@ load_bootstrap_north_data <- function(current_date, use_prerelease = FALSE, lfs_
   }
 
   if (!file.exists(file_path)) {
-    warning("Bootstrap North file not found: ", file_path)
+    cli::cli_warn("Bootstrap North file not found: {file_path}")
     return(NULL)
   }
 
@@ -415,7 +415,7 @@ load_bootstrap_north_data <- function(current_date, use_prerelease = FALSE, lfs_
 #' @return Data frame with TABS Plus data or NULL if not found
 #' @keywords internal
 load_plus_north_data <- function(current_date, use_prerelease = FALSE) {
-  cat(format(Sys.time(), "%H:%M:%S"), "-Loading TABPLUS NORTH for", format(current_date, "%Y%m"), "\n")
+  .lfs_sub("TABPLUS NORTH (Nunavut, N.W.T. and Yukon)")
 
   # Try both common variants
   variants <- c(
@@ -437,7 +437,7 @@ load_plus_north_data <- function(current_date, use_prerelease = FALSE) {
     }
   }
 
-  warning("No matching Tabplus North file found for date: ", format(current_date, "%Y%m"))
+  cli::cli_warn("No matching Tabplus North file found for date: {format(current_date, '%Y-%m')}")
   return(NULL)
 }
 
