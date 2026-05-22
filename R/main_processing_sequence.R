@@ -14,9 +14,7 @@ process_lfs_data <- function(lfs_config_list) {
   # =========================================================================
   
   # Start timer
-  if (requireNamespace("tictoc", quietly = TRUE)) {
-    tictoc::tic()
-  }
+  tictoc::tic()
   
   # Validate required parameters
   if (missing(lfs_config_list)) {
@@ -120,7 +118,7 @@ process_lfs_data <- function(lfs_config_list) {
         }
         
         # Discard raw data to free memory
-		.lfs_sub("Descarding raw microdata and retaining aggregated levels (num, den and bootstraps as applicable")
+		.lfs_sub("Discarding raw microdata and retaining aggregated levels (num, den and bootstraps as applicable")
         rm(month_data)
         gc()
       },
@@ -183,7 +181,7 @@ process_lfs_data <- function(lfs_config_list) {
   value_cols <- grep(weight_var, names(est_data), value = TRUE)
   
   # 1. Complete combinations
-  est_data <- complete_combinations(est_data, lfs_config_list$analysis_vars, lfs_config_list$weight_var)
+  est_data <- complete_combinations(est_data, analysis_vars, lfs_config_list$weight_var)
   
   # 2. Include marginal totals if requested
   if (!is.null(lfs_config_list$include_marginals) && lfs_config_list$include_marginals) {
@@ -246,13 +244,12 @@ process_lfs_data <- function(lfs_config_list) {
     }
 
   # 8. Calculate difference between two categories for comparison variable if requested
-  if (!is.null(lfs_config_list$calculate_difference) && lfs_config_list$calculate_difference) {
+  if (isTRUE(lfs_config_list$calculate_difference) &&
+      est_config$est_type %in% c("ratio", "ratio_distribution")) {
       est_data <- calculate_difference(
         est_data,
         lfs_config_list$analysis_vars,
         lfs_config_list$weight_var,
-        estimate$est_type,
-        estimate,
         lfs_config_list$comparison_variable,
         lfs_config_list$comparison_categories
       )
