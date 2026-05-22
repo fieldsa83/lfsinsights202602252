@@ -36,13 +36,22 @@ load_tabs_data <- function(current_date, use_prerelease = FALSE, lfs_config_list
     col_types = paste(substr(tabs_layout$FORMAT, 1, 1), collapse = ""),
     .name_repair = "minimal"
   )
+  # Determine decimal scaling if specified in layout (ie HRLYEARN, HRS, etc)
+  decimal_vars <- tabs_layout[tabs_layout$Decimals > 0 & tabs_layout$Name %in% names(data), ]
+  scales <- setNames(decimal_vars$Decimals, decimal_vars$Name)
 
-  # Add DATE and HHLDID
+  # Apply decimals and add DATE and HHLDID cols
   data <- data %>%
     dplyr::mutate(
-      DATE = current_date,
-      HHLDID = as.character(paste(PROV, PROV1, PSEUDOUI, FRAME, STRAFRAM, TYPE, CLUST, ROTATION, LISTLINE, MULT, sep = ""))
+      dplyr::across(
+        dplyr::all_of(names(scales)),
+        ~ . / 10 ^ scales[dplyr::cur_column()]
+      ),
+      DATE   = current_date,
+      HHLDID = as.character(paste(PROV, PROV1, PSEUDOUI, FRAME, STRAFRAM, TYPE, CLUST, ROTATION, LISTLINE,
+   MULT, sep = ""))
     )
+
 
   if (is.null(data) | nrow(data) <1) {
     cli::cli_abort("Error in processing TABS.")
