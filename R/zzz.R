@@ -28,19 +28,29 @@ NULL
 # -------------------------------------------------------------------------
 .onAttach <- function(libname, pkgname) {
   version <- utils::packageVersion(pkgname)
-
   ghost  <- cli::make_ansi_style("#aaaaaa", bg = FALSE)
   purple <- cli::make_ansi_style("#b8a4d4", bg = FALSE)
-
+  
+  #banner <- r"(
+  #    __     _____________    _____            _       __    __        
+  #   / /    / ____/  ____/   /_  _/,___  _____(_)___ _/ /_  / /______ 
+  #  / /    / /__  \__  \      / / / __ \/ ___/ / __ `/ __ \/ __/ ___/ 
+  # / /____/ ___/ ___/  /    _/ /_/ / / (__  ) / /_/ / / / / /_(__  )  
+  #/______/_/   /______/   /_____/_/ /_/____/_/\__, /_/ /_/\__/____/   
+  #                                           /____/)"
+  #cli::cat_line(cli::col_blue(banner), ghost(paste0("            v", version)))
+  
   packageStartupMessage("")
   packageStartupMessage(
-    cli::col_blue(cli::style_bold("  LFS Insights  ")),
-    ghost(paste0("v", version))
+    cli::col_blue(cli::style_bold("  L F S   I n s i g h t s  ")),
+    ghost(paste0("         v", version))
   )
-  packageStartupMessage(cli::col_blue(paste0("  ", strrep(.lfs_rule_char, .lfs_rule_len))))
-  packageStartupMessage(purple("  Labour Force Survey data processing & estimation engine"))
-  packageStartupMessage(cli::col_silver("  Type ?lfsinsights for help"))
-  packageStartupMessage("")
+  underline <- strrep("\u2500", 60)
+  cli::cli_verbatim(paste0(" ", purple(underline)))
+  cli::cat_line(cli::col_blue("  LFS data processing and estimation engine"))
+  cli::cat_line(ghost(paste0("  Type", cli::style_italic(" ?lfsinsights")," for help")))
+  cli::cat_line(ghost(paste0("  Use the configurator at", cli::style_italic(" clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights"))))
+  cli::cat_line("")
 }
 
 
@@ -81,7 +91,7 @@ NULL
   wrapped <- strwrap(msg, width = available)
 
   first <- paste0(
-    "   ", .lfs_now(), " ", cli::col_blue("\u2139"), "  ", wrapped[1L]
+    "   ", cli::col_silver(.lfs_now()), " ", cli::col_blue("\u2139"), "  ", wrapped[1L]
   )
   cli::cli_verbatim(first)
 
@@ -144,10 +154,7 @@ NULL
   text   <- cli::col_blue(title)
   cli::cli_verbatim(paste0(marker, "  ", text))
 
-  # Thin underline beneath the title, aligned under the title text.
-  # Three-space indent to clear the chevron + two-space gap.
-  #underline <- strrep("\u2500", nchar(title))   # ─ × len(title)
-  underline <- strrep("\u2500", 25)   # ─ × len(title)
+  underline <- strrep("\u2500", 25)
   cli::cli_verbatim(paste0("   ", purple(underline)))
 }
 
@@ -167,7 +174,7 @@ NULL
   marker <- cli::col_green("\u2714")
   cli::cli_verbatim(paste0(marker, "  ", cli::col_blue(msg)))
 
-  underline <- strrep("\u2500", 25)   # ─ × len(title)
+  underline <- strrep("\u2500", 25)
     purple <- cli::make_ansi_style("#b8a4d4", bg = FALSE)
   cli::cli_verbatim(paste0("   ", purple(underline)))
   cli::cli_verbatim(" ")
