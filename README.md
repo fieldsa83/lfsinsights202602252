@@ -1,50 +1,49 @@
 # lfsinsights
 
-An R package for aggregating Labour Force Survey data.
+An R package for processing and estimating Labour Force Survey (LFS) microdata. 
+
+The lfs_table() function supports weighted counts, ratios, moving averages, period-over-period change, bootstrap variance, and more. Can run across one or multiple estimates in a single pass. Can read in supplemental files such as TABS+, LMI, DLMI, etc.
+
+Additional functions such as lfs_microdata() outputs microdata records as specified, while lfs_plotly_line() and lfs_plotly_bar() will output standardized charts.
 
 ## Installation
 
-
 ```r
-# Install package remotes package if needed
-install.packages("remotes") # install remotes package if not already
+# Install the 'remotes' package if needed
+install.packages("remotes")
 
-# Install lfsinsights package
+# Install lfsinsights
 remotes::install_git("https://gitlab.k8s.cloud.statcan.ca/clmi-cimt/clmi-insights/lfsinsights")
 
-# Initialize package
+# Load the package
 library(lfsinsights)
 ```
 
 
-## 🚀 Live Application
+## Get started with the LFS Table Configurator
 
-Click the link below to access and use the LFS Table Configurator:
+Configure your table visually and copy the generated R code into your script — no syntax required.
 
-**[Launch LFS Configurator](https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/index.html)**
+🚀 **[Launch Configurator →](https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/index.html)**
 
-Or visit: https://clmi-cimt.pages.cloud.statcan.ca/clmi-insights/lfsinsights/index.html
 
-## Basic usage
+## Basic usage for a summary table
 
 ```r
-library(lfsinsights)
-
-# Calculate basic summary table (ie cross-tabulation)
+# Employment count by province and gender (by default uses FINALWT)
 df_result <- lfs_table(
   # Date configuration
-  start_date = "2025-01-01",
-  end_date = "2025-04-01",
-
-  # Analysis parameters    
+  start_date    = "2025-01-01",
+  end_date      = "2025-04-01",
+  
+  # Analysis parameters  
   filter_condition = "AGE>=15 & LFSSTAT %in% c(1,2)",
-  analysis_vars = "GENDER, NOC_5"
+  analysis_vars = "PROV, GENDER"
 )
 ```
 
 
 ## Package Workflow
-
 
 ```mermaid
 graph TD
@@ -89,99 +88,46 @@ graph TD
 ```
 
 
-## Complete parameters of lfs_table
+## Other Examples of outputs
+
+### Summary table — multiple estimates with change
 
 ```r
-library(lfsinsights)
-
-# Calculate basic summary table
+# Employment count and unemployment rate by province, with month-over-month change
 df_result <- lfs_table(
-  # Date
-  start_date = "2025-01-01",
-  end_date = "2025-04-01",
-  # Filter
-  filter_condition = "AGE>=15 & LFSSTAT %in% c(1,2)",
-  # Analysis vars
-  analysis_vars = "GENDER, NOC_5"
-)
 
-# Calculate multiple estimates in one pass (showing all options)
-df_result <- lfs_table(
-  # Date 
-  start_date = "2025-01-01",
-  end_date = "2025-03-01",
-  moving_avg = 1,                 # Number of periods for moving average
-  prerelease = FALSE,             # Use pre-release data for latest month
-  filter_months = NULL,           # Alternatively: "1, 2, 3"
-  filter_years = NULL,            # Alternatively: "2025"
+  # Date configuration
+  start_date    = "2025-01-01",
+  end_date      = "2025-06-01",
   
-  # Analysis parameters
-  filter_condition = "AGE >= 15 & !is.na(LFSSTAT)",  # Global filter applied at data loading
+  # Analysis parameters  
   analysis_vars = "PROV, GENDER",
-  weight_var = "FINALWT",         # Alternative: "IVMWT", "supp_weight"
-
+  filter_condition = "AGE >= 15 & !is.na(LFSSTAT)",
+  
   # Estimates configuration
   estimates = list(
-    # Count of employed people
     list(
-      est_name = "Employment",
-      est_type = "sum",
-      est_filter = "EMPLOYED == 1" 
+      est_name   = "Employment",
+      est_type   = "sum",
+      est_filter = "EMPLOYED == 1"
     ),
-    # Unemployment rate estimate
     list(
-      est_name = "Unemployment",
-      est_type = "ratio",
-      ratio_numerator = "UNEMPLOYED",
+      est_name          = "Unemployment rate",
+      est_type          = "ratio",
+      ratio_numerator   = "UNEMPLOYED",
       ratio_denominator = "LABOURFORCE",
-      ratio_type = "percent",    # Options: "percent" or "average"
-      ratio_decimals = 1,        # Number of decimal places
-      est_filter = NULL          # No additional filter needed, same as global filter
-    ),
-    
-    # Employment rate estimate
-    list(
-      est_name = "Wages for employees",
-      est_type = "ratio",
-      ratio_numerator = "HRLYEARN",
-      ratio_denominator = "POP",
-      ratio_type = "average",
-      ratio_decimals = 2,
-      est_filter = "LFSSTAT %in% c(1,2) & COWMAIN %in% c(1,2)"
+      ratio_type        = "percent",
+      ratio_decimals    = 1
     )
   ),
-
-  # Other data source options
-  bootstraps = FALSE,             # Include bootstrap weights
-  tabs_plus = FALSE,              # Include TABS Plus data
-  supplement_lmi = FALSE,         # Include LMI (monthly) supplement data
-  supplement_lmsi = FALSE,        # Include LMSI (quarterly) supplement data
-  supplement_dlmi = FALSE,        # Include DLMI (annual disability) supplement data
-  north = FALSE,                  # Include territories data
   
-  # Processing options
-  add_custom_dvs = TRUE,          # Apply custom derived variables
-  add_labels = TRUE,              # Apply labels to variables
-  language = "EN",                # Language for labels: "EN" or "FR"
-  
-  # Calculation options
-  include_marginals = TRUE,       # Include marginal totals
-  weight_rounding = 100,          # Rounding factor for estimate levels (sum, numerator, denominator)
-  add_suppression_flag = TRUE,    # Add basic suppression flags
-  
-  # Change calculation options
-  calculate_change = FALSE,        # Calculate period-over-period changes
-  lag_period = 1                  # Periods to lag for change calculation
+  # Calculate change
+  calculate_change = TRUE,
+  lag_period       = 1
 )
+```
 
-# Load microdata only
-microdata <- lfs_microdata(
-  start_date = "2025-01-01",
-  end_date = "2025-01-01",
-  filter_condition = "AGE >= 15 & EMPLOYED == 1"
-)
-
-
+```r
 # Calculate year-over-year, three-month moving average change for VISMIN unemployment rates with bootstrap weights and variance
 df_result <- lfs_table(
   # Date configuration
@@ -193,7 +139,7 @@ df_result <- lfs_table(
   # Analysis parameters    
   filter_condition = "AGE >= 15 & !is.na(LFSSTAT)",
   analysis_vars = "PROV, GENDER, VISMIN",
-  weight_var = "IVMWT",
+  weight_var = "IVMWT", # Note: weight specified
   
   # Estimates configuration
   estimates = list(
@@ -219,35 +165,133 @@ df_result <- lfs_table(
   calculate_change = TRUE,
   lag_period = 1
 )
+
 ```
 
-
-
-## Built-in Visualizations
-
-The package includes standardized plotting functions that use `plotly` to automatically handle formatting, source annotations, and responsive layouts.
+### Microdata
 
 ```r
-library(lfsinsights)
-
-# Generate a formatted line chart for the unemployment rate
-lfs_plotly_line(
-  data = df_result,
-  x = "DATE",
-  y = "Unemployment",
-  color = "GENDER",
-  title = "Unemployment Rate by Gender",
-  subtitle = "Monthly rates, seasonally adjusted",
-  y_title = "Percentage (%)"
-)
-
-# Generate a formatted bar chart
-lfs_plotly_bar(
-  data = df_result,
-  x = "DATE",
-  y = "Employment",
-  color = "PROV",
-  title = "Employment Levels by Province"
+# Load all microdata records for given month (specyfing in-scope filter)
+microdata <- lfs_microdata(
+  start_date      = "2025-01-01",
+  end_date        = "2025-03-01",
+  filter_condition = "AGE >= 15 & !is.na(LFSSTAT)"
 )
 ```
 
+### Visualizations
+
+The package includes standardized plotting functions using `plotly`. The examples below are standalone — replace `df_result` with your own output and adjust the `y` column name to match your estimate type (`FINALWT_sum` for weighted counts, `FINALWT_ratio` for rates and percentages).
+
+```r
+# Line chart — typical use case for a weighted sum over time
+lfs_plotly_line(
+  data     = df_result,
+  x        = "DATE",
+  y        = "FINALWT_sum",
+  color    = "GENDER",
+  title    = "Employment by Gender",
+  subtitle = "Monthly estimates",
+  y_title  = "Number of persons"
+)
+
+# Bar chart — typical use case for a ratio or rate
+lfs_plotly_bar(
+  data  = df_result,
+  x     = "DATE",
+  y     = "FINALWT_ratio",
+  color = "PROV",
+  title = "Unemployment Rate by Province"
+)
+```
+
+
+## Complete parameters
+
+All available parameters for `lfs_table()`, with inline notes on usage.
+
+```r
+df_result <- lfs_table(
+
+  # Date range
+  start_date  = "2024-04-01",
+  end_date    = "2025-04-01",
+
+  # Date filtering
+  moving_avg    = 3,      # Periods for moving average (1, 3, or 12 most common)
+  filter_months = "4",    # Restrict to specific months, e.g. "4" for April only
+  filter_years  = NULL,   # Restrict to specific years, e.g. "2024, 2025"
+  prerelease    = FALSE,  # Use pre-release data for the latest month
+
+  # Analysis parameters
+  filter_condition = "AGE >= 15 & !is.na(LFSSTAT)",  # Applied at data load
+  analysis_vars    = "PROV, GENDER, VISMIN",
+  weight_var       = "IVMWT",  # Options: "FINALWT", "IVMWT", "supp_weight"
+
+  # Estimates — one or more, each as a list
+  estimates = list(
+
+    # Weighted count
+    list(
+      est_name   = "Employment",
+      est_type   = "sum",
+      est_filter = "EMPLOYED == 1"
+    ),
+
+    # Ratio / rate
+    list(
+      est_name          = "Unemployment rate",
+      est_type          = "ratio",
+      ratio_numerator   = "UNEMPLOYED",
+      ratio_denominator = "LABOURFORCE",
+      ratio_type        = "percent",   # "percent" or "average"
+      ratio_decimals    = 1
+    ),
+
+    # Average (e.g. hourly wages)
+    list(
+      est_name          = "Average hourly wages",
+      est_type          = "ratio",
+      ratio_numerator   = "HRLYEARN",
+      ratio_denominator = "POP",
+      ratio_type        = "average",
+      ratio_decimals    = 2,
+      est_filter        = "LFSSTAT %in% c(1,2) & COWMAIN %in% c(1,2)"
+    ),
+
+    # Distribution across all levels of a variable
+    list(
+      est_name       = "Industry distribution",
+      est_type       = "ratio_distribution",
+      var_name       = "INDUSTRY",
+      ratio_type     = "percent",
+      ratio_decimals = 1
+    )
+  ),
+
+  # Data sources
+  bootstraps      = TRUE,   # Include bootstrap weights for variance estimation
+  tabs_plus       = FALSE,  # Include TABS Plus variables
+  north           = FALSE,  # Include territories (Nunavut, N.W.T., Yukon)
+  supplement_lmi  = FALSE, # LMI monthly supplement (from January 2022)
+  supplement_lmsi = FALSE, # LMSI quarterly supplement (from July 2022)
+  supplement_dlmi = FALSE, # DLMI annual disability supplement (from 2022)
+
+  # Processing options
+  add_custom_dvs     = TRUE,   # Apply custom derived variables (custom_dvs.R)
+  add_labels         = TRUE,   # Apply value labels
+  language           = "EN",   # "EN" or "FR"
+  include_marginals  = TRUE,   # Include marginal totals
+  weight_rounding    = 100,    # Divide estimate levels by this factor
+  add_suppression_flag = FALSE, # Flag estimates below reliability threshold
+
+  # Change over time
+  calculate_change = TRUE,
+  lag_period       = 1,    # Periods to lag (1 = month-over-month, 12 = year-over-year)
+
+  # Difference between two categories
+  calculate_difference   = TRUE,
+  comparison_variable    = "GENDER",
+  comparison_categories  = c("1", "2")  # Category 1 minus category 2
+)
+```
